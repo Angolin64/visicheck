@@ -4,7 +4,31 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>VisiCheck — Is your website visible to Google and AI?</title>
-<meta name="description" content="Paste your URL and get a plain-English action plan to be found by Google and cited by AI — SEO, AEO, GEO, AIO and SXO in one scan.">
+<meta name="description" content="Paste your URL and get a plain-English action plan to be found by Google and cited by AI — SEO, AEO, GEO, AIO and SXO in one free scan.">
+<link rel="canonical" href="https://www.getvisicheck.com/">
+<meta property="og:title" content="VisiCheck — Is your website visible to Google and AI?">
+<meta property="og:description" content="Free scan: paste your URL and get a clear score plus a plain-English action plan so Google finds you and AI tools like ChatGPT mention you.">
+<meta property="og:url" content="https://www.getvisicheck.com/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="VisiCheck">
+<meta property="og:image" content="https://www.getvisicheck.com/og.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="VisiCheck — Is your website visible to Google and AI?">
+<meta name="twitter:description" content="Free scan: a clear score and step-by-step plan to be found by Google and cited by AI.">
+<meta name="twitter:image" content="https://www.getvisicheck.com/og.png">
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"WebApplication","name":"VisiCheck","url":"https://www.getvisicheck.com/","applicationCategory":"BusinessApplication","operatingSystem":"Web","description":"Free website visibility checker: scores any URL across SEO, AEO, GEO, AIO and SXO and returns a prioritized, plain-English action plan.","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"publisher":{"@type":"Organization","name":"VisiCheck","url":"https://www.getvisicheck.com/"}}
+</script>
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[
+{"@type":"Question","name":"Is VisiCheck free?","acceptedAnswer":{"@type":"Answer","text":"Yes. The full scan and the action plan are free while VisiCheck is in early access. Paid plans with automatic weekly monitoring and alerts are coming soon."}},
+{"@type":"Question","name":"What does being visible to AI mean?","acceptedAnswer":{"@type":"Answer","text":"When someone asks ChatGPT, Perplexity or Google AI for a recommendation, those engines cite websites they can read, understand and trust. VisiCheck checks the exact signals they look for — structure, clarity, facts, authority and speed — and tells you what to fix."}},
+{"@type":"Question","name":"Do you store my website data?","acceptedAnswer":{"@type":"Answer","text":"No. VisiCheck reads your public page, analyzes it in your browser, and does not keep copies of your site. We only store your email if you choose to leave it for monitoring alerts."}},
+{"@type":"Question","name":"How often should I check my website?","acceptedAnswer":{"@type":"Answer","text":"After every significant change to your site, and at least once a month — search engines and AI models update constantly. Automatic weekly monitoring is coming soon."}},
+{"@type":"Question","name":"My score is low. Where do I start?","acceptedAnswer":{"@type":"Answer","text":"Start with the Fix This First list: it is sorted so the changes with the biggest impact and lowest effort come first, each explained in plain language with no jargon."}}
+]}
+</script>
+<script defer src="/_vercel/insights/script.js"></script>
 <style>
   :root{
     --bg:#f7f9fc; --card:#ffffff; --border:#e3e9f2; --text:#17233a; --muted:#5b6b85;
@@ -86,6 +110,35 @@
   .email button{padding:11px 20px;border:none;border-radius:9px;background:var(--accent);color:#fff;font-weight:700;cursor:pointer}
   .emailok{color:var(--good);font-size:.9rem;display:none;margin-top:8px}
   footer{text-align:center;color:var(--muted);font-size:.76rem;margin-top:44px;line-height:1.6}
+  /* learn section */
+  .learn{margin-top:56px;border-top:1px solid var(--border);padding-top:34px}
+  .learn h2{font-size:1.15rem;margin:26px 0 12px;letter-spacing:-.2px}
+  .learn .steps{padding-left:22px}
+  .learn .steps li{margin-bottom:10px;font-size:.93rem;line-height:1.55}
+  .learn .steps li b{color:var(--accent)}
+  .pillarlist{list-style:none}
+  .pillarlist li{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:12px 16px;margin-bottom:8px;font-size:.9rem;line-height:1.55;box-shadow:var(--shadow)}
+  .pillarlist li b{color:var(--accent)}
+  .faq details{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:12px 16px;margin-bottom:8px;box-shadow:var(--shadow)}
+  .faq summary{font-weight:700;font-size:.93rem;cursor:pointer}
+  .faq p{margin-top:8px;font-size:.89rem;color:var(--muted);line-height:1.6}
+  /* print report */
+  #printHead{display:none}
+  #printBtn{margin-top:10px}
+  @media print{
+    :root,[data-theme="dark"],[data-theme="light"]{
+      --bg:#fff;--card:#fff;--border:#bbb;--text:#000;--muted:#333;
+      --accent:#1a49b8;--good:#0e7a4b;--warn:#8a6200;--bad:#b03030;--manual:#5747a8;--shadow:none;
+    }
+    body{background:#fff}
+    .bar,.hero,#progress,.learn,#emailPanel,#printBtn,#moreBtn,.controls{display:none!important}
+    #results{display:block!important}
+    #moreFixes{display:block!important}
+    #printHead{display:block;border-bottom:2px solid #000;margin-bottom:16px;padding-bottom:10px}
+    #printHead .pbrand{font-size:1.4rem;font-weight:800}
+    #printHead .pmeta{font-size:.85rem;color:#333;margin-top:4px}
+    .fix,.panel,.pillar,.overall{break-inside:avoid;border:1px solid #ccc}
+  }
 </style>
 </head>
 <body>
@@ -124,6 +177,7 @@
       <div class="otext">
         <h2 id="overallTitle"></h2>
         <p id="overallText"></p>
+        <button class="ctl" id="printBtn" data-i18n="printBtn"></button>
       </div>
     </div>
     <p class="note" id="jsNote" data-i18n="jsNote"></p>
@@ -148,7 +202,7 @@
       <div id="passList"></div>
     </div>
 
-    <div class="panel">
+    <div class="panel" id="emailPanel">
       <h3 data-i18n="emailTitle"></h3>
       <p style="color:var(--muted);font-size:.9rem;margin-bottom:6px" data-i18n="emailSub"></p>
       <form class="email" id="emailForm">
@@ -159,8 +213,36 @@
       <!-- TODO backend: wire this form to the email service before launch. MVP stores locally only. -->
     </div>
 
-    <footer data-i18n="footer"></footer>
   </div>
+
+  <div id="printHead"></div>
+
+  <section class="learn" id="learn">
+    <h2 data-i18n="secHowTitle"></h2>
+    <ol class="steps">
+      <li data-i18n="how1"></li>
+      <li data-i18n="how2"></li>
+      <li data-i18n="how3"></li>
+    </ol>
+    <h2 data-i18n="secPillarsTitle"></h2>
+    <ul class="pillarlist">
+      <li data-i18n="pl_seo"></li>
+      <li data-i18n="pl_aeo"></li>
+      <li data-i18n="pl_geo"></li>
+      <li data-i18n="pl_aio"></li>
+      <li data-i18n="pl_sxo"></li>
+    </ul>
+    <h2 data-i18n="faqTitle"></h2>
+    <div class="faq">
+      <details><summary data-i18n="faq1q"></summary><p data-i18n="faq1a"></p></details>
+      <details><summary data-i18n="faq2q"></summary><p data-i18n="faq2a"></p></details>
+      <details><summary data-i18n="faq3q"></summary><p data-i18n="faq3a"></p></details>
+      <details><summary data-i18n="faq4q"></summary><p data-i18n="faq4a"></p></details>
+      <details><summary data-i18n="faq5q"></summary><p data-i18n="faq5a"></p></details>
+    </div>
+  </section>
+
+  <footer data-i18n="footer"></footer>
 </div>
 
 <script>
@@ -191,7 +273,29 @@ en:{
   ovTextMid:'Your site has a solid base, but it’s missing signals that Google and AI tools look for. The plan below starts with the highest-impact fixes.',
   ovTextLow:'Right now, Google and AI tools are likely skipping over your site. Good news: most of the fixes below are simple, and each one moves the needle.',
   dEasy:'Easy', dMed:'Medium', dPro:'Get help',
-  pillarDesc:{ SEO:'Being found on Google', AEO:'Being the direct answer', GEO:'Being cited by AI chats', AIO:'What AI knows about you', SXO:'Turning visits into customers' }
+  pillarDesc:{ SEO:'Being found on Google', AEO:'Being the direct answer', GEO:'Being cited by AI chats', AIO:'What AI knows about you', SXO:'Turning visits into customers' },
+  printBtn:'🖨️ Download PDF report', printFor:'Visibility report for',
+  secHowTitle:'How does VisiCheck work?',
+  how1:'<b>Paste your address.</b> Any public website works — yours or a competitor’s. No signup, no installation, nothing to download.',
+  how2:'<b>We read your page the way Google and AI do.</b> In about a minute, VisiCheck reviews 25+ signals across the five pillars of modern visibility.',
+  how3:'<b>You get a plan, not just a score.</b> A prioritized fix list in plain English — biggest impact and easiest wins first, no jargon.',
+  secPillarsTitle:'What do the five scores mean?',
+  pl_seo:'<b>SEO — Being found on Google.</b> The classic foundation: titles, descriptions, structure and links that let Google understand and rank your pages.',
+  pl_aeo:'<b>AEO — Being the direct answer.</b> How ready your content is to be picked as the answer inside Google’s answer boxes and AI Overviews.',
+  pl_geo:'<b>GEO — Being cited by AI chats.</b> Whether engines like ChatGPT, Perplexity and Gemini can read, trust and quote your brand.',
+  pl_aio:'<b>AIO — What AI knows about you.</b> How consistently your brand appears across the web, so AI models learn you exist and describe you accurately.',
+  pl_sxo:'<b>SXO — Turning visits into customers.</b> Speed, mobile experience and clear calls to action, so the traffic you win actually converts.',
+  faqTitle:'Frequently asked questions',
+  faq1q:'Is VisiCheck free?',
+  faq1a:'Yes. The full scan and the action plan are free while VisiCheck is in early access. Paid plans with automatic weekly monitoring and alerts are coming soon.',
+  faq2q:'What does “visible to AI” mean?',
+  faq2a:'When someone asks ChatGPT, Perplexity or Google AI for a recommendation, those engines cite websites they can read, understand and trust. VisiCheck checks the exact signals they look for — structure, clarity, facts, authority and speed — and tells you what to fix.',
+  faq3q:'Do you store my website data?',
+  faq3a:'No. VisiCheck reads your public page, analyzes it in your browser, and does not keep copies of your site. We only store your email if you choose to leave it for monitoring alerts.',
+  faq4q:'How often should I check my website?',
+  faq4a:'After every significant change to your site, and at least once a month — search engines and AI models update constantly. Automatic weekly monitoring is coming soon.',
+  faq5q:'My score is low. Where do I start?',
+  faq5a:'Start with the “Fix this first” list: it is sorted so the changes with the biggest impact and the lowest effort come first, each explained in plain language.'
 },
 es:{
   heroTitle:'¿Tu sitio web es <em>visible</em> para Google y la IA?',
@@ -213,7 +317,29 @@ es:{
   ovTextMid:'Tu sitio tiene una base sólida, pero le faltan señales que Google y las IAs buscan. El plan empieza por lo de mayor impacto.',
   ovTextLow:'Ahora mismo, es probable que Google y las IAs estén pasando por alto tu sitio. La buena noticia: la mayoría de los arreglos son simples y cada uno suma.',
   dEasy:'Fácil', dMed:'Medio', dPro:'Pide ayuda',
-  pillarDesc:{ SEO:'Que Google te encuentre', AEO:'Ser la respuesta directa', GEO:'Que las IAs te citen', AIO:'Lo que la IA sabe de ti', SXO:'Convertir visitas en clientes' }
+  pillarDesc:{ SEO:'Que Google te encuentre', AEO:'Ser la respuesta directa', GEO:'Que las IAs te citen', AIO:'Lo que la IA sabe de ti', SXO:'Convertir visitas en clientes' },
+  printBtn:'🖨️ Descargar reporte PDF', printFor:'Reporte de visibilidad de',
+  secHowTitle:'¿Cómo funciona VisiCheck?',
+  how1:'<b>Pega tu dirección.</b> Funciona con cualquier sitio público — el tuyo o el de un competidor. Sin registro, sin instalar nada.',
+  how2:'<b>Leemos tu página como la leen Google y la IA.</b> En un minuto, VisiCheck revisa más de 25 señales en los cinco pilares de la visibilidad moderna.',
+  how3:'<b>Recibes un plan, no solo un puntaje.</b> Una lista de arreglos priorizada en lenguaje simple — primero lo de mayor impacto y menor esfuerzo.',
+  secPillarsTitle:'¿Qué significan las cinco puntuaciones?',
+  pl_seo:'<b>SEO — Que Google te encuentre.</b> La base clásica: títulos, descripciones, estructura y enlaces que permiten a Google entender y posicionar tus páginas.',
+  pl_aeo:'<b>AEO — Ser la respuesta directa.</b> Qué tan listo está tu contenido para ser elegido como respuesta en las cajas de respuesta de Google y AI Overviews.',
+  pl_geo:'<b>GEO — Que las IAs te citen.</b> Si motores como ChatGPT, Perplexity y Gemini pueden leer, confiar y citar tu marca.',
+  pl_aio:'<b>AIO — Lo que la IA sabe de ti.</b> Qué tan consistente aparece tu marca en internet, para que los modelos de IA aprendan que existes y te describan bien.',
+  pl_sxo:'<b>SXO — Convertir visitas en clientes.</b> Velocidad, experiencia móvil y llamadas a la acción claras, para que el tráfico que ganas de verdad convierta.',
+  faqTitle:'Preguntas frecuentes',
+  faq1q:'¿VisiCheck es gratis?',
+  faq1a:'Sí. El análisis completo y el plan de acción son gratis mientras VisiCheck está en acceso temprano. Pronto llegarán planes de pago con monitoreo semanal automático y alertas.',
+  faq2q:'¿Qué significa ser “visible para la IA”?',
+  faq2a:'Cuando alguien pide una recomendación a ChatGPT, Perplexity o la IA de Google, esos motores citan sitios que pueden leer, entender y en los que confían. VisiCheck revisa exactamente esas señales — estructura, claridad, datos, autoridad y velocidad — y te dice qué corregir.',
+  faq3q:'¿Guardan los datos de mi sitio?',
+  faq3a:'No. VisiCheck lee tu página pública, la analiza en tu navegador y no guarda copias de tu sitio. Solo almacenamos tu email si decides dejarlo para recibir alertas.',
+  faq4q:'¿Cada cuánto debo revisar mi sitio?',
+  faq4a:'Después de cada cambio importante y al menos una vez al mes — los buscadores y los modelos de IA se actualizan constantemente. El monitoreo semanal automático llegará pronto.',
+  faq5q:'Mi puntaje salió bajo. ¿Por dónde empiezo?',
+  faq5a:'Empieza por la lista “Arregla esto primero”: está ordenada para que lo de mayor impacto y menor esfuerzo vaya primero, todo explicado en lenguaje simple.'
 }};
 
 /* ---------- Check catalog (t=title, w=why, tech=expander) ---------- */
@@ -499,6 +625,9 @@ async function fetchPsi(url){
 
 let lastResult=null;
 
+/* Lead capture endpoint (ConvertCore CRM webhook). Empty = store locally only. */
+const LEAD_WEBHOOK='';
+
 $('scanForm').addEventListener('submit', async ev=>{
   ev.preventDefault();
   $('errBox').style.display='none';
@@ -539,6 +668,7 @@ function dial(score,size){
 
 function render(R){
   $('results').style.display='block';
+  $('printHead').innerHTML='<div class="pbrand">VisiCheck</div><div class="pmeta">'+T('printFor')+' '+R.url+' · '+new Date().toLocaleDateString(lang==='es'?'es':'en-US',{year:'numeric',month:'long',day:'numeric'})+' · getvisicheck.com</div>';
   $('overallDial').innerHTML=dial(R.overall,110);
   $('overallTitle').textContent = R.overall>=75?T('ovGood'):R.overall>=45?T('ovMid'):T('ovLow');
   $('overallText').textContent = R.overall>=75?T('ovTextGood'):R.overall>=45?T('ovTextMid'):T('ovTextLow');
@@ -567,14 +697,21 @@ function render(R){
   $('results').scrollIntoView({behavior:'smooth'});
 }
 
-$('emailForm').addEventListener('submit',ev=>{
+$('emailForm').addEventListener('submit',async ev=>{
   ev.preventDefault();
   const v=$('emailInput').value.trim();
   if(!v) return;
-  const list = JSON.parse(store.get('vc-emails')||'[]'); list.push({email:v,url:lastResult?lastResult.url:'',at:new Date().toISOString()});
+  const payload={email:v, website:lastResult?lastResult.url:'', score:lastResult?lastResult.overall:null,
+    scores:lastResult?lastResult.scores:null, language:lang, source:'getvisicheck.com', at:new Date().toISOString()};
+  if(LEAD_WEBHOOK){
+    try{ await fetch(LEAD_WEBHOOK,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)}); }catch(e){/* keep local copy below */}
+  }
+  const list = JSON.parse(store.get('vc-emails')||'[]'); list.push(payload);
   store.set('vc-emails',JSON.stringify(list));
   $('emailOk').style.display='block'; $('emailInput').value='';
 });
+
+$('printBtn').onclick=()=>window.print();
 
 applyTheme(); applyLang();
 }
