@@ -631,8 +631,8 @@ async function fetchPsi(url){
 
 let lastResult=null;
 
-/* Lead capture endpoint (ConvertCore CRM webhook). Empty = store locally only. */
-const LEAD_WEBHOOK='';
+/* Lead capture: same-origin relay (api/lead.js) that forwards to ConvertCore CRM. */
+const LEAD_WEBHOOK = location.protocol.startsWith('http') ? '/api/lead' : '';
 
 $('scanForm').addEventListener('submit', async ev=>{
   ev.preventDefault();
