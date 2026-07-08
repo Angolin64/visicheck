@@ -459,8 +459,19 @@ window.addEventListener('error', ()=>{ try{
   document.getElementById('scanBtn').disabled=false;
 }catch(_){} });
 
-/* fetch chain */
+/* fetch chain: own serverless fetcher first (when hosted), then public proxies */
+const looksHtml = h => h && h.length>500 && /<(title|body|html)/i.test(h);
 async function fetchHtml(url){
+  // Route 0: our own /api/scan (exists when the app is hosted on Vercel).
+  if (location.protocol.startsWith('http')) {
+    try{
+      const res = await fetch('/api/scan?url='+encodeURIComponent(url),{signal:timeoutSignal(20000)});
+      if(res.ok){
+        const j = await res.json();
+        if(j && looksHtml(j.html)) return j.html;
+      }
+    }catch(e){/* fall through to proxies */}
+  }
   const routes=[
     u=>'https://api.allorigins.win/raw?url='+encodeURIComponent(u),
     u=>'https://corsproxy.io/?url='+encodeURIComponent(u),
@@ -471,7 +482,7 @@ async function fetchHtml(url){
       const res = await fetch(r(url),{signal:timeoutSignal(20000)});
       if(!res.ok) continue;
       const html = await res.text();
-      if(html && html.length>500 && /<(title|body|html)/i.test(html)) return html;
+      if(looksHtml(html)) return html;
     }catch(e){/* next route */}
   }
   return null;
