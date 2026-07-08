@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VisiCheck — Is your website visible to Google and AI?</title>
+<meta name="description" content="Paste your URL and get a plain-English action plan to be found by Google and cited by AI — SEO, AEO, GEO, AIO and SXO in one scan.">
+<style>
+  :root{
+    --bg:#f7f9fc; --card:#ffffff; --border:#e3e9f2; --text:#17233a; --muted:#5b6b85;
+    --accent:#2f6bff; --accent-soft:rgba(47,107,255,.09);
+    --good:#1eaa6d; --warn:#e5a300; --bad:#e05252; --manual:#8a7bd8;
+    --shadow:0 4px 18px rgba(23,35,58,.06);
+  }
+  [data-theme="dark"]{
+    --bg:#0f1420; --card:#1a2233; --border:#2c3a55; --text:#e8edf7; --muted:#9fb0cc;
+    --accent:#4f8dff; --accent-soft:rgba(79,141,255,.12);
+    --good:#4fd396; --warn:#f0c060; --bad:#f08080; --manual:#a99bf0;
+    --shadow:0 4px 18px rgba(0,0,0,.35);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--text);line-height:1.5;transition:background .25s,color .25s}
+  .wrap{max-width:960px;margin:0 auto;padding:20px 20px 60px}
+  /* top bar */
+  .bar{display:flex;justify-content:space-between;align-items:center;padding:6px 0 26px}
+  .logo{font-size:1.25rem;font-weight:800;letter-spacing:-.3px}
+  .logo span{color:var(--accent)}
+  .controls{display:flex;gap:8px}
+  .ctl{background:var(--card);border:1px solid var(--border);color:var(--text);border-radius:8px;padding:6px 12px;font-size:.82rem;cursor:pointer;box-shadow:var(--shadow)}
+  .ctl:hover{border-color:var(--accent)}
+  /* hero */
+  .hero{text-align:center;padding:26px 0 8px}
+  h1{font-size:clamp(1.6rem,4vw,2.4rem);letter-spacing:-.5px;line-height:1.2;margin-bottom:12px}
+  h1 em{color:var(--accent);font-style:normal}
+  .sub{color:var(--muted);max-width:620px;margin:0 auto 28px;font-size:1.02rem}
+  .scanbox{display:flex;gap:10px;max-width:640px;margin:0 auto;flex-wrap:wrap}
+  .scanbox input{flex:1;min-width:240px;padding:14px 16px;font-size:1rem;border:2px solid var(--border);border-radius:10px;background:var(--card);color:var(--text);outline:none}
+  .scanbox input:focus{border-color:var(--accent)}
+  .scanbox button{padding:14px 26px;font-size:1rem;font-weight:700;border:none;border-radius:10px;background:var(--accent);color:#fff;cursor:pointer}
+  .scanbox button:disabled{opacity:.55;cursor:wait}
+  .hint{font-size:.8rem;color:var(--muted);margin-top:10px}
+  .err{color:var(--bad);font-size:.9rem;margin-top:12px;display:none}
+  /* progress */
+  #progress{display:none;text-align:center;margin:34px 0}
+  .spinner{width:42px;height:42px;border:4px solid var(--border);border-top-color:var(--accent);border-radius:50%;margin:0 auto 14px;animation:spin 1s linear infinite}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  #progressMsg{color:var(--muted);font-size:.92rem}
+  /* results */
+  #results{display:none;margin-top:34px}
+  .overall{display:flex;align-items:center;gap:22px;background:var(--card);border:1px solid var(--border);border-radius:14px;padding:22px;box-shadow:var(--shadow);flex-wrap:wrap}
+  .dial{position:relative;width:110px;height:110px;flex:none}
+  .dial svg{transform:rotate(-90deg)}
+  .dial .num{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:1.7rem;font-weight:800}
+  .overall .otext h2{font-size:1.2rem;margin-bottom:4px}
+  .overall .otext p{color:var(--muted);font-size:.92rem;max-width:520px}
+  .note{background:var(--accent-soft);border-left:3px solid var(--accent);padding:10px 14px;border-radius:8px;font-size:.86rem;margin-top:14px;display:none}
+  /* pillar cards */
+  .pillars{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin:18px 0}
+  .pillar{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px;text-align:center;box-shadow:var(--shadow)}
+  .pillar .pscore{font-size:1.55rem;font-weight:800}
+  .pillar .pname{font-weight:700;font-size:.92rem;margin:2px 0}
+  .pillar .pdesc{font-size:.72rem;color:var(--muted);line-height:1.35}
+  /* plan */
+  .panel{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:22px;box-shadow:var(--shadow);margin-top:18px}
+  .panel h3{font-size:1.05rem;margin-bottom:14px}
+  .fix{border:1px solid var(--border);border-radius:10px;padding:14px 16px;margin-bottom:10px}
+  .fix .fhead{display:flex;align-items:flex-start;gap:10px;flex-wrap:wrap}
+  .badge{font-size:.66rem;font-weight:700;text-transform:uppercase;letter-spacing:.6px;padding:3px 8px;border-radius:20px;flex:none;margin-top:2px}
+  .b-bad{background:rgba(224,82,82,.14);color:var(--bad)} .b-warn{background:rgba(229,163,0,.14);color:var(--warn)}
+  .b-easy{background:rgba(30,170,109,.14);color:var(--good)} .b-med{background:rgba(229,163,0,.14);color:var(--warn)} .b-pro{background:rgba(138,123,216,.16);color:var(--manual)}
+  .fix .ftitle{font-weight:700;font-size:.95rem;flex:1;min-width:200px}
+  .fix .fwhy{color:var(--muted);font-size:.86rem;margin-top:6px}
+  .fix details{margin-top:6px}
+  .fix summary{font-size:.78rem;color:var(--accent);cursor:pointer}
+  .fix .tech{font-size:.8rem;color:var(--muted);margin-top:6px;font-family:Consolas,monospace}
+  .morebtn{background:none;border:1px dashed var(--border);color:var(--muted);width:100%;padding:10px;border-radius:10px;cursor:pointer;font-size:.86rem;margin-top:4px}
+  .passline{font-size:.86rem;color:var(--good);padding:5px 0;border-bottom:1px dashed var(--border)}
+  .passline:last-child{border-bottom:none}
+  .manline{font-size:.88rem;padding:8px 0;border-bottom:1px dashed var(--border);color:var(--text)}
+  .manline:last-child{border-bottom:none}
+  .manline b{color:var(--manual)}
+  /* email */
+  .email{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px}
+  .email input{flex:1;min-width:220px;padding:11px 14px;border:2px solid var(--border);border-radius:9px;background:var(--bg);color:var(--text);font-size:.92rem;outline:none}
+  .email input:focus{border-color:var(--accent)}
+  .email button{padding:11px 20px;border:none;border-radius:9px;background:var(--accent);color:#fff;font-weight:700;cursor:pointer}
+  .emailok{color:var(--good);font-size:.9rem;display:none;margin-top:8px}
+  footer{text-align:center;color:var(--muted);font-size:.76rem;margin-top:44px;line-height:1.6}
+</style>
+</head>
+<body>
+<div id="nojs" style="background:#e5a300;color:#17233a;padding:12px 16px;text-align:center;font-weight:600;font-size:.95rem">
+  ⚠️ If the button below doesn't work, you're viewing this inside an email preview. Please DOWNLOAD the file first, then double-click it to open in Chrome, Edge or Safari. / Si el botón no funciona, estás en la vista previa del correo. DESCARGA el archivo y ábrelo con doble clic.
+</div>
+<script>try{document.getElementById('nojs').style.display='none'}catch(e){}</script>
+<div class="wrap">
+  <div class="bar">
+    <div class="logo">Visi<span>Check</span></div>
+    <div class="controls">
+      <button class="ctl" id="langBtn" aria-label="Language">ES</button>
+      <button class="ctl" id="themeBtn" aria-label="Theme">🌙</button>
+    </div>
+  </div>
+
+  <section class="hero">
+    <h1 data-i18n="heroTitle"></h1>
+    <p class="sub" data-i18n="heroSub"></p>
+    <form class="scanbox" id="scanForm">
+      <input type="text" id="urlInput" placeholder="yourwebsite.com" aria-label="Website URL" autocomplete="url">
+      <button type="submit" id="scanBtn" data-i18n="scanBtn"></button>
+    </form>
+    <p class="hint" data-i18n="hint"></p>
+    <p class="err" id="errBox"></p>
+  </section>
+
+  <div id="progress">
+    <div class="spinner" role="status"></div>
+    <p id="progressMsg"></p>
+  </div>
+
+  <div id="results">
+    <div class="overall">
+      <div class="dial" id="overallDial"></div>
+      <div class="otext">
+        <h2 id="overallTitle"></h2>
+        <p id="overallText"></p>
+      </div>
+    </div>
+    <p class="note" id="jsNote" data-i18n="jsNote"></p>
+    <p class="note" id="psiNote" data-i18n="psiNote"></p>
+
+    <div class="pillars" id="pillarCards"></div>
+
+    <div class="panel">
+      <h3 data-i18n="planTitle"></h3>
+      <div id="topFixes"></div>
+      <button class="morebtn" id="moreBtn"></button>
+      <div id="moreFixes" style="display:none"></div>
+    </div>
+
+    <div class="panel">
+      <h3 data-i18n="manualTitle"></h3>
+      <div id="manualList"></div>
+    </div>
+
+    <div class="panel">
+      <h3 data-i18n="passTitle"></h3>
+      <div id="passList"></div>
+    </div>
+
+    <div class="panel">
+      <h3 data-i18n="emailTitle"></h3>
+      <p style="color:var(--muted);font-size:.9rem;margin-bottom:6px" data-i18n="emailSub"></p>
+      <form class="email" id="emailForm">
+        <input type="email" id="emailInput" placeholder="you@business.com" aria-label="Email" required>
+        <button type="submit" data-i18n="emailBtn"></button>
+      </form>
+      <p class="emailok" id="emailOk" data-i18n="emailOk"></p>
+      <!-- TODO backend: wire this form to the email service before launch. MVP stores locally only. -->
+    </div>
+
+    <footer data-i18n="footer"></footer>
+  </div>
+</div>
+
+<script>
+/* ============================================================
+   VisiCheck MVP — single-file. Engine is pure (runChecks) so it
+   can be unit-tested in Node with a DOM implementation.
+   ============================================================ */
+
+/* ---------- i18n ---------- */
+const I18N = {
+en:{
+  heroTitle:'Is your website <em>visible</em> to Google and AI?',
+  heroSub:'Paste your address below. In about a minute you get a clear score and a step-by-step plan — in plain English — so Google finds you and AI tools like ChatGPT mention you.',
+  scanBtn:'Check my site', hint:'Free · No signup · Works with any website',
+  errUrl:'That doesn’t look like a web address. Try something like: yourwebsite.com',
+  errFetch:'We couldn’t reach this site. It may be blocking automated tools, or it may be down. Please try again in a minute.',
+  p1:'Reading your page…', p2:'Checking how Google sees you…', p3:'Checking how AI tools see you…', p4:'Measuring speed…', p5:'Writing your plan…',
+  jsNote:'Heads up: this site builds its content with JavaScript. Search engines and AI tools often see the mostly-empty first version — which is what we analyzed. That in itself is worth fixing.',
+  psiNote:'Speed was measured with basic checks only (Google’s speed test didn’t respond). Numbers may differ from Google’s official tools.',
+  planTitle:'🔧 Fix this first', moreShow:'Show {n} more fixes', moreHide:'Hide extra fixes',
+  manualTitle:'👀 Check these yourself (we can’t see them from here)',
+  passTitle:'✅ Already working well',
+  emailTitle:'Want us to watch your site for you?', emailSub:'Leave your email and we’ll tell you when your score changes. (Coming soon)',
+  emailBtn:'Notify me', emailOk:'✓ Saved! We’ll be in touch when monitoring launches.',
+  footer:'VisiCheck · getvisicheck.com · This is an early preview. Scores are based on what we can verify from your public page — they are guidance, not guarantees.',
+  ovGood:'Strong visibility', ovMid:'Room to grow', ovLow:'You’re invisible to too many customers',
+  ovTextGood:'Your site does many things right. The plan below will help you defend and extend that lead.',
+  ovTextMid:'Your site has a solid base, but it’s missing signals that Google and AI tools look for. The plan below starts with the highest-impact fixes.',
+  ovTextLow:'Right now, Google and AI tools are likely skipping over your site. Good news: most of the fixes below are simple, and each one moves the needle.',
+  dEasy:'Easy', dMed:'Medium', dPro:'Get help',
+  pillarDesc:{ SEO:'Being found on Google', AEO:'Being the direct answer', GEO:'Being cited by AI chats', AIO:'What AI knows about you', SXO:'Turning visits into customers' }
+},
+es:{
+  heroTitle:'¿Tu sitio web es <em>visible</em> para Google y la IA?',
+  heroSub:'Pega tu dirección abajo. En un minuto recibes una puntuación clara y un plan paso a paso — en lenguaje simple — para que Google te encuentre y herramientas de IA como ChatGPT te mencionen.',
+  scanBtn:'Revisar mi sitio', hint:'Gratis · Sin registro · Funciona con cualquier sitio',
+  errUrl:'Eso no parece una dirección web. Prueba algo como: tusitio.com',
+  errFetch:'No pudimos acceder a este sitio. Puede estar bloqueando herramientas automáticas o estar caído. Intenta de nuevo en un minuto.',
+  p1:'Leyendo tu página…', p2:'Viendo cómo te ve Google…', p3:'Viendo cómo te ven las IAs…', p4:'Midiendo velocidad…', p5:'Escribiendo tu plan…',
+  jsNote:'Ojo: este sitio construye su contenido con JavaScript. Los buscadores y las IAs suelen ver la primera versión casi vacía — que es lo que analizamos. Eso, por sí solo, vale la pena corregirlo.',
+  psiNote:'La velocidad se midió solo con chequeos básicos (la prueba de velocidad de Google no respondió). Los números pueden diferir de las herramientas oficiales.',
+  planTitle:'🔧 Arregla esto primero', moreShow:'Ver {n} arreglos más', moreHide:'Ocultar arreglos extra',
+  manualTitle:'👀 Revisa esto tú mismo (no podemos verlo desde aquí)',
+  passTitle:'✅ Esto ya funciona bien',
+  emailTitle:'¿Quieres que vigilemos tu sitio por ti?', emailSub:'Deja tu email y te avisamos cuando tu puntuación cambie. (Próximamente)',
+  emailBtn:'Avísame', emailOk:'✓ ¡Guardado! Te contactaremos cuando el monitoreo esté listo.',
+  footer:'VisiCheck · getvisicheck.com · Vista previa temprana. Las puntuaciones se basan en lo que podemos verificar de tu página pública — son una guía, no garantías.',
+  ovGood:'Visibilidad fuerte', ovMid:'Espacio para crecer', ovLow:'Eres invisible para demasiados clientes',
+  ovTextGood:'Tu sitio hace muchas cosas bien. El plan de abajo te ayuda a defender y ampliar esa ventaja.',
+  ovTextMid:'Tu sitio tiene una base sólida, pero le faltan señales que Google y las IAs buscan. El plan empieza por lo de mayor impacto.',
+  ovTextLow:'Ahora mismo, es probable que Google y las IAs estén pasando por alto tu sitio. La buena noticia: la mayoría de los arreglos son simples y cada uno suma.',
+  dEasy:'Fácil', dMed:'Medio', dPro:'Pide ayuda',
+  pillarDesc:{ SEO:'Que Google te encuentre', AEO:'Ser la respuesta directa', GEO:'Que las IAs te citen', AIO:'Lo que la IA sabe de ti', SXO:'Convertir visitas en clientes' }
+}};
+
+/* ---------- Check catalog (t=title, w=why, tech=expander) ---------- */
+const CHECKS = {
+  title:{pillar:'SEO',weight:3,d:'easy',
+    en:{t:'Give your page a clear title (15–60 characters)',w:'The title is the headline Google shows in results. Without a good one, people scroll past you.',tech:'<title> tag missing, empty, or outside 15–60 chars.'},
+    es:{t:'Dale a tu página un título claro (15–60 caracteres)',w:'El título es el titular que Google muestra en los resultados. Sin uno bueno, la gente pasa de largo.',tech:'Etiqueta <title> ausente, vacía o fuera de 15–60 caracteres.'}},
+  metaDesc:{pillar:'SEO',weight:2,d:'easy',
+    en:{t:'Write a short description of your page (70–160 characters)',w:'This is the little text under your title on Google. It’s your one-line sales pitch.',tech:'meta[name=description] missing or outside 70–160 chars.'},
+    es:{t:'Escribe una descripción corta de tu página (70–160 caracteres)',w:'Es el textito bajo tu título en Google. Es tu frase de venta.',tech:'meta[name=description] ausente o fuera de 70–160 caracteres.'}},
+  h1:{pillar:'SEO',weight:2,d:'easy',
+    en:{t:'Use exactly one main headline on the page',w:'Google reads your main headline to understand what the page is about. Zero confuses it; several compete with each other.',tech:'Expected exactly one <h1>; found 0 or 2+.'},
+    es:{t:'Usa exactamente un titular principal en la página',w:'Google lee tu titular principal para entender de qué trata la página. Cero lo confunde; varios compiten entre sí.',tech:'Se esperaba exactamente un <h1>; se encontraron 0 o 2+.'}},
+  alts:{pillar:'SEO',weight:2,d:'easy',
+    en:{t:'Describe your images with alt text',w:'Google and AI can’t see photos — the description is how they know what’s in them. It also helps blind visitors.',tech:'Less than 80% of <img> tags have a non-empty alt attribute.'},
+    es:{t:'Describe tus imágenes con texto alternativo',w:'Google y la IA no ven fotos — la descripción es cómo saben qué contienen. También ayuda a visitantes ciegos.',tech:'Menos del 80% de las <img> tienen atributo alt con texto.'}},
+  canonical:{pillar:'SEO',weight:1,d:'med',
+    en:{t:'Tell Google which version of this page is the official one',w:'If the same page exists at several addresses, Google splits your credit between them. One small tag fixes it.',tech:'link[rel=canonical] not found.'},
+    es:{t:'Dile a Google cuál versión de esta página es la oficial',w:'Si la misma página existe en varias direcciones, Google reparte tu crédito entre ellas. Una etiqueta pequeña lo arregla.',tech:'No se encontró link[rel=canonical].'}},
+  https:{pillar:'SEO',weight:2,d:'pro',
+    en:{t:'Secure your site with HTTPS (the padlock)',w:'Browsers mark sites without the padlock as "not secure" and Google ranks them lower. Visitors leave.',tech:'Page URL does not use https://.'},
+    es:{t:'Asegura tu sitio con HTTPS (el candado)',w:'Los navegadores marcan los sitios sin candado como "no seguros" y Google los baja. Los visitantes se van.',tech:'La URL no usa https://.'}},
+  og:{pillar:'SEO',weight:1,d:'easy',
+    en:{t:'Add a social preview (title + image) for sharing',w:'When someone shares your link on WhatsApp or Facebook, this controls what shows up. Bare links get fewer clicks.',tech:'og:title and/or og:description meta tags missing.'},
+    es:{t:'Agrega vista previa social (título + imagen) para compartir',w:'Cuando alguien comparte tu link en WhatsApp o Facebook, esto controla lo que aparece. Los links pelados reciben menos clics.',tech:'Faltan las etiquetas og:title y/u og:description.'}},
+  internalLinks:{pillar:'SEO',weight:1,d:'med',
+    en:{t:'Link between your own pages more',w:'Links between your pages help Google discover all of them and understand which are most important.',tech:'Fewer than 5 internal links found on the page.'},
+    es:{t:'Enlaza más entre tus propias páginas',w:'Los enlaces entre tus páginas ayudan a Google a descubrirlas todas y saber cuáles importan más.',tech:'Menos de 5 enlaces internos en la página.'}},
+  qHeadings:{pillar:'AEO',weight:3,d:'med',
+    en:{t:'Turn some headings into the questions customers ask',w:'AI answers and Google’s answer boxes grab content organized as question → answer. Headings like "How much does X cost?" get picked.',tech:'Fewer than 2 H2/H3 headings starting with what/how/why/when/where/who/can/should/is/are/do/does.'},
+    es:{t:'Convierte algunos subtítulos en las preguntas que hacen tus clientes',w:'Las respuestas de IA y las cajas de respuesta de Google toman contenido organizado como pregunta → respuesta.',tech:'Menos de 2 H2/H3 que empiecen con qué/cómo/por qué/cuándo/dónde/quién/cuánto (u equivalentes en inglés).'}},
+  faqSchema:{pillar:'AEO',weight:2,d:'pro',
+    en:{t:'Mark up your FAQ so machines can read it',w:'A special label on your questions-and-answers section makes it much easier for Google and AI to quote you as the answer.',tech:'No FAQPage or HowTo JSON-LD found.'},
+    es:{t:'Etiqueta tu sección de preguntas frecuentes para que las máquinas la lean',w:'Una etiqueta especial en tus preguntas y respuestas facilita que Google y la IA te citen como la respuesta.',tech:'No se encontró JSON-LD de FAQPage ni HowTo.'}},
+  leadAnswer:{pillar:'AEO',weight:2,d:'med',
+    en:{t:'Answer the main question in your first paragraph (40–80 words)',w:'AI tools lift short, direct answers. If your page takes three paragraphs to get to the point, they quote someone else.',tech:'First substantial <p> is under 40 or over ~100 words.'},
+    es:{t:'Responde la pregunta principal en tu primer párrafo (40–80 palabras)',w:'Las IAs toman respuestas cortas y directas. Si tu página tarda tres párrafos en ir al grano, citan a otro.',tech:'El primer <p> sustancial tiene menos de 40 o más de ~100 palabras.'}},
+  lists:{pillar:'AEO',weight:1,d:'easy',
+    en:{t:'Use bulleted or numbered lists for steps and options',w:'Lists are the easiest format for Google and AI to lift into an answer — and easier for humans to scan.',tech:'No <ul>/<ol> with 2+ items found in content.'},
+    es:{t:'Usa listas con viñetas o números para pasos y opciones',w:'Las listas son el formato más fácil de citar para Google y la IA — y más fáciles de leer para humanos.',tech:'No se encontraron <ul>/<ol> con 2+ elementos.'}},
+  h2Count:{pillar:'AEO',weight:1,d:'easy',
+    en:{t:'Break your page into sections with subheadings',w:'AI reads your page in chunks. Clear section titles every few paragraphs make each chunk quotable.',tech:'Fewer than 2 <h2> headings found.'},
+    es:{t:'Divide tu página en secciones con subtítulos',w:'La IA lee tu página por bloques. Títulos de sección claros hacen cada bloque citable.',tech:'Menos de 2 <h2> encontrados.'}},
+  jsonld:{pillar:'GEO',weight:2,d:'pro',
+    en:{t:'Add structured data (a machine-readable card about your business)',w:'It’s like a business card written in the language machines read natively. Sites with it get rich results and clearer AI citations.',tech:'No <script type="application/ld+json"> found.'},
+    es:{t:'Agrega datos estructurados (una ficha de tu negocio legible por máquinas)',w:'Es como una tarjeta de presentación escrita en el idioma nativo de las máquinas. Los sitios que la tienen logran mejores resultados y citas más claras.',tech:'No se encontró <script type="application/ld+json">.'}},
+  orgSchema:{pillar:'GEO',weight:2,d:'pro',
+    en:{t:'Identify your business by name, type and location for machines',w:'Google and AI need to know who you are as an entity — name, what you do, where. This label states it unambiguously.',tech:'No Organization/LocalBusiness/Person JSON-LD type found.'},
+    es:{t:'Identifica tu negocio por nombre, tipo y ubicación para las máquinas',w:'Google y la IA necesitan saber quién eres como entidad — nombre, qué haces, dónde. Esta etiqueta lo dice sin ambigüedad.',tech:'No se encontró tipo Organization/LocalBusiness/Person en JSON-LD.'}},
+  stats:{pillar:'GEO',weight:2,d:'med',
+    en:{t:'Put real numbers and facts on your page',w:'AI engines prefer citing pages with concrete data — prices, years, quantities, results. Vague pages don’t get quoted.',tech:'Fewer than 3 sentences containing digits found in body text.'},
+    es:{t:'Pon números y datos reales en tu página',w:'Las IAs prefieren citar páginas con datos concretos — precios, años, cantidades, resultados. Las páginas vagas no se citan.',tech:'Menos de 3 frases con dígitos en el texto.'}},
+  outbound:{pillar:'GEO',weight:1,d:'easy',
+    en:{t:'Link to a couple of trusted sources',w:'Citing your sources signals well-researched content — the kind AI engines trust and quote.',tech:'Fewer than 2 links to external domains found.'},
+    es:{t:'Enlaza a un par de fuentes confiables',w:'Citar tus fuentes señala contenido bien investigado — el tipo que las IAs confían y citan.',tech:'Menos de 2 enlaces a dominios externos.'}},
+  author:{pillar:'GEO',weight:1,d:'easy',
+    en:{t:'Show who is behind the content (author or About link)',w:'Google’s quality guidelines and AI engines favor content with a visible, real person or business behind it.',tech:'No author meta, byline pattern, or /about link detected.'},
+    es:{t:'Muestra quién está detrás del contenido (autor o enlace "Nosotros")',w:'Las guías de calidad de Google y las IAs favorecen contenido con una persona o negocio real y visible detrás.',tech:'No se detectó meta de autor, firma, ni enlace /about o /nosotros.'}},
+  siteName:{pillar:'AIO',weight:2,d:'easy',
+    en:{t:'Use your business name consistently in the page title',w:'AI models learn your brand by seeing the same name everywhere. If your title doesn’t carry it, you’re training them to forget you.',tech:'og:site_name / schema name not reflected in <title>.'},
+    es:{t:'Usa el nombre de tu negocio de forma consistente en el título',w:'Los modelos de IA aprenden tu marca viendo el mismo nombre en todas partes. Si tu título no lo lleva, los entrenas a olvidarte.',tech:'og:site_name / nombre en schema no aparece en <title>.'}},
+  socialLinks:{pillar:'AIO',weight:1,d:'easy',
+    en:{t:'Link your social profiles from your site',w:'Connected profiles help machines confirm you’re one and the same business across the internet.',tech:'No links to facebook/instagram/linkedin/x/youtube/tiktok found, and no sameAs in schema.'},
+    es:{t:'Enlaza tus perfiles sociales desde tu sitio',w:'Los perfiles conectados ayudan a las máquinas a confirmar que eres el mismo negocio en todo internet.',tech:'Sin enlaces a facebook/instagram/linkedin/x/youtube/tiktok, y sin sameAs en schema.'}},
+  aboutPage:{pillar:'AIO',weight:1,d:'med',
+    en:{t:'Have an About page and link to it',w:'It’s the first place machines (and skeptical customers) look to learn who you are and why to trust you.',tech:'No link containing /about, /nosotros, /quienes detected.'},
+    es:{t:'Ten una página "Nosotros" y enlázala',w:'Es el primer lugar donde las máquinas (y los clientes desconfiados) miran para saber quién eres y por qué confiar.',tech:'No se detectó enlace con /about, /nosotros o /quienes.'}},
+  contactPage:{pillar:'AIO',weight:1,d:'easy',
+    en:{t:'Make your contact info easy to find',w:'A visible way to reach you (page, phone or email) is a basic trust signal for Google, AI, and humans.',tech:'No /contact link, tel: or mailto: found.'},
+    es:{t:'Haz que tu información de contacto sea fácil de encontrar',w:'Una vía visible de contacto (página, teléfono o email) es una señal básica de confianza para Google, la IA y los humanos.',tech:'No se encontró enlace /contact, tel: ni mailto:.'}},
+  viewport:{pillar:'SXO',weight:2,d:'pro',
+    en:{t:'Make your site adapt to phone screens',w:'Most of your visitors are on a phone. Without this, they see a shrunken desktop site and leave.',tech:'meta[name=viewport] missing.'},
+    es:{t:'Haz que tu sitio se adapte a pantallas de teléfono',w:'La mayoría de tus visitantes usan el teléfono. Sin esto, ven una versión de escritorio encogida y se van.',tech:'Falta meta[name=viewport].'}},
+  psi:{pillar:'SXO',weight:3,d:'pro',
+    en:{t:'Speed up your site — it’s slower than Google wants',w:'Every extra second of loading costs you visitors, and Google ranks slow sites lower. Compressing images is usually the first win.',tech:'PageSpeed performance score below 50 (fail) or 50–89 (warn).'},
+    es:{t:'Acelera tu sitio — es más lento de lo que Google quiere',w:'Cada segundo extra de carga te cuesta visitantes, y Google baja a los sitios lentos. Comprimir imágenes suele ser la primera victoria.',tech:'Puntaje de rendimiento PageSpeed bajo 50 (fallo) o 50–89 (aviso).'}},
+  cta:{pillar:'SXO',weight:3,d:'med',
+    en:{t:'Give visitors ONE clear next step (a visible button)',w:'Traffic without a "book now / call us / get a quote" button is a store without a checkout. This is where visits become money.',tech:'No button/link with action words (book, call, buy, quote, contact, order, start, schedule, demo…) detected.'},
+    es:{t:'Dale a los visitantes UN paso siguiente claro (un botón visible)',w:'Tráfico sin un botón de "reserva / llámanos / pide tu cotización" es una tienda sin caja. Aquí las visitas se vuelven dinero.',tech:'No se detectó botón/enlace con palabras de acción (reserva, llama, compra, cotiza, contacto, agenda…).'}},
+  formCheck:{pillar:'SXO',weight:1,d:'med',
+    en:{t:'Add a simple way to capture interested visitors',w:'A short form (or booking link) catches people who aren’t ready to call. Without one, they leave and forget you.',tech:'No <form> found on the page.'},
+    es:{t:'Agrega una forma simple de captar visitantes interesados',w:'Un formulario corto (o link de reserva) capta a quienes no están listos para llamar. Sin él, se van y te olvidan.',tech:'No se encontró <form> en la página.'}},
+  headScripts:{pillar:'SXO',weight:1,d:'pro',
+    en:{t:'Reduce the code that blocks your page from showing',w:'Several scripts load before anything appears on screen. Each one delays the moment your visitor sees your page.',tech:'More than 3 synchronous <script src> tags in <head>.'},
+    es:{t:'Reduce el código que bloquea la aparición de tu página',w:'Varios scripts cargan antes de que algo aparezca en pantalla. Cada uno retrasa el momento en que tu visitante ve tu página.',tech:'Más de 3 <script src> síncronos en el <head>.'}},
+  lazyImg:{pillar:'SXO',weight:1,d:'med',
+    en:{t:'Load images only when they’re about to be seen',w:'Loading every photo upfront slows the whole page. Modern sites load them as the visitor scrolls.',tech:'5+ images and none use loading="lazy".'},
+    es:{t:'Carga las imágenes solo cuando están por verse',w:'Cargar todas las fotos de entrada frena toda la página. Los sitios modernos las cargan mientras el visitante baja.',tech:'5+ imágenes y ninguna usa loading="lazy".'}}
+};
+
+/* Manual checks (never scored) */
+const MANUAL = {
+  wikipedia:{en:'Search your business name in ChatGPT and Google. Does anything accurate come up? AI learns from authoritative sources — being mentioned on directories, news sites or Wikipedia teaches it you exist.',
+             es:'Busca el nombre de tu negocio en ChatGPT y Google. ¿Aparece algo correcto? La IA aprende de fuentes autoritativas — aparecer en directorios, prensa o Wikipedia le enseña que existes.'},
+  reviews:{en:'Check your Google Business Profile and reviews. AI assistants pull heavily from them for local recommendations.',
+           es:'Revisa tu Perfil de Negocio de Google y tus reseñas. Los asistentes de IA se apoyan mucho en ellos para recomendaciones locales.'},
+  consistency:{en:'Make sure your business name, address and phone are written EXACTLY the same on your site, Google, Facebook and directories.',
+               es:'Asegúrate de que el nombre, dirección y teléfono de tu negocio estén escritos EXACTAMENTE igual en tu sitio, Google, Facebook y directorios.'}
+};
+
+const PILLARS = ['SEO','AEO','GEO','AIO','SXO'];
+
+/* ---------- Engine (pure) ---------- */
+function runChecks(doc, ctx){
+  // ctx: {url, host, psiScore (0-100|null)}
+  const out = [];
+  const add = (id, status, evidence) => out.push({id, status, evidence, ...CHECKS[id] ? {pillar:CHECKS[id].pillar, weight:CHECKS[id].weight} : {}});
+  const txt = (doc.body ? doc.body.textContent : '') || '';
+  const words = txt.trim().split(/\s+/).filter(Boolean);
+
+  // --- SEO ---
+  const title = (doc.querySelector('title')||{}).textContent || '';
+  add('title', title.trim().length>=15 && title.trim().length<=60 ? 'pass' : (title.trim()? 'warn':'fail'), 'len='+title.trim().length);
+  const md = doc.querySelector('meta[name="description"]');
+  const mdLen = md ? (md.getAttribute('content')||'').trim().length : 0;
+  add('metaDesc', mdLen>=70 && mdLen<=160 ? 'pass' : (mdLen>0?'warn':'fail'), 'len='+mdLen);
+  const h1s = doc.querySelectorAll('h1').length;
+  add('h1', h1s===1?'pass':(h1s===0?'fail':'warn'), 'count='+h1s);
+  const imgs = Array.from(doc.querySelectorAll('img'));
+  const withAlt = imgs.filter(i=>(i.getAttribute('alt')||'').trim().length>0).length;
+  add('alts', imgs.length===0?'pass':(withAlt/imgs.length>=0.8?'pass':(withAlt/imgs.length>=0.5?'warn':'fail')), withAlt+'/'+imgs.length);
+  add('canonical', doc.querySelector('link[rel="canonical"]')?'pass':'warn','');
+  add('https', ctx.url.startsWith('https://')?'pass':'fail','');
+  const ogT = doc.querySelector('meta[property="og:title"]'), ogD = doc.querySelector('meta[property="og:description"]');
+  add('og', (ogT&&ogD)?'pass':(ogT||ogD?'warn':'fail'),'');
+  const links = Array.from(doc.querySelectorAll('a[href]'));
+  const internal = links.filter(a=>{const h=a.getAttribute('href')||'';return h.startsWith('/')||h.startsWith('#')===false&&h.includes(ctx.host)||(!h.startsWith('http')&&!h.startsWith('mailto:')&&!h.startsWith('tel:')&&!h.startsWith('#'));}).length;
+  add('internalLinks', internal>=5?'pass':(internal>=2?'warn':'fail'),'count='+internal);
+
+  // --- AEO ---
+  const hs = Array.from(doc.querySelectorAll('h2,h3')).map(h=>(h.textContent||'').trim().toLowerCase());
+  const qWords = /^(what|how|why|when|where|who|which|can|should|do|does|is|are|qu[eé]|c[oó]mo|por qu[eé]|cu[aá]ndo|d[oó]nde|qui[eé]n|cu[aá]l|cu[aá]nto|puedo|debo|es |son )/;
+  const qCount = hs.filter(h=>qWords.test(h)||h.endsWith('?')).length;
+  add('qHeadings', qCount>=2?'pass':(qCount===1?'warn':'fail'),'count='+qCount);
+  let hasFaq=false, hasOrg=false, schemaName='', sameAs=false, anyLd=false;
+  Array.from(doc.querySelectorAll('script[type="application/ld+json"]')).forEach(s=>{
+    anyLd=true;
+    try{
+      const flat = JSON.stringify(JSON.parse(s.textContent||'{}'));
+      if(/FAQPage|HowTo/i.test(flat)) hasFaq=true;
+      if(/"@type"\s*:\s*"?(Organization|LocalBusiness|Person|ProfessionalService|Restaurant|Store|MedicalBusiness)/i.test(flat)) hasOrg=true;
+      if(/sameAs/i.test(flat)) sameAs=true;
+      const m = flat.match(/"name"\s*:\s*"([^"]{2,60})"/); if(m) schemaName=m[1];
+    }catch(e){/* malformed JSON-LD counts as present but unparsable */}
+  });
+  add('faqSchema', hasFaq?'pass':'fail','');
+  const paras = Array.from(doc.querySelectorAll('p')).map(p=>(p.textContent||'').trim()).filter(t=>t.split(/\s+/).length>=15);
+  const lead = paras[0]||'';
+  const leadWords = lead.split(/\s+/).filter(Boolean).length;
+  add('leadAnswer', leadWords>=40&&leadWords<=100?'pass':(leadWords>0?'warn':'fail'),'words='+leadWords);
+  const listOk = Array.from(doc.querySelectorAll('ul,ol')).some(l=>l.querySelectorAll('li').length>=2);
+  add('lists', listOk?'pass':'warn','');
+  const h2c = doc.querySelectorAll('h2').length;
+  add('h2Count', h2c>=2?'pass':(h2c===1?'warn':'fail'),'count='+h2c);
+
+  // --- GEO ---
+  add('jsonld', anyLd?'pass':'fail','');
+  add('orgSchema', hasOrg?'pass':'fail','');
+  const sentences = txt.split(/[.!?]\s/).filter(s=>s.length>20);
+  const numeric = sentences.filter(s=>/\d/.test(s)).length;
+  add('stats', numeric>=3?'pass':(numeric>=1?'warn':'fail'),'count='+numeric);
+  const external = links.filter(a=>{const h=a.getAttribute('href')||'';return h.startsWith('http')&&!h.includes(ctx.host);}).length;
+  add('outbound', external>=2?'pass':(external===1?'warn':'fail'),'count='+external);
+  const hasAuthor = !!doc.querySelector('meta[name="author"]') || /by\s+[A-Z][a-z]+|por\s+[A-Z][a-z]+/.test(txt.slice(0,3000)) || links.some(a=>/about|nosotros|quienes/i.test(a.getAttribute('href')||''));
+  add('author', hasAuthor?'pass':'warn','');
+
+  // --- AIO ---
+  const ogSite = doc.querySelector('meta[property="og:site_name"]');
+  const brand = (ogSite?ogSite.getAttribute('content'):'') || schemaName;
+  add('siteName', brand ? (title.toLowerCase().includes(brand.toLowerCase().slice(0,12))?'pass':'warn') : 'warn', brand?('brand='+brand):'no brand signal');
+  const social = links.some(a=>/(facebook|instagram|linkedin|twitter|x\.com|youtube|tiktok)\.com/i.test(a.getAttribute('href')||''));
+  add('socialLinks', (social||sameAs)?'pass':'fail','');
+  add('aboutPage', links.some(a=>/about|nosotros|quienes|our-story/i.test(a.getAttribute('href')||''))?'pass':'warn','');
+  const contact = links.some(a=>{const h=a.getAttribute('href')||'';return /contact|contacto/i.test(h)||h.startsWith('tel:')||h.startsWith('mailto:');});
+  add('contactPage', contact?'pass':'fail','');
+
+  // --- SXO ---
+  add('viewport', doc.querySelector('meta[name="viewport"]')?'pass':'fail','');
+  if(ctx.psiScore!==null && ctx.psiScore!==undefined){
+    add('psi', ctx.psiScore>=90?'pass':(ctx.psiScore>=50?'warn':'fail'),'score='+ctx.psiScore);
+  }
+  const actionRe = /\b(book|call|buy|quote|contact|order|start|schedule|demo|get started|sign up|subscribe|reserve|reserva|llama|compra|cotiza|agenda|pide|empieza|suscr[ií]b)/i;
+  const ctas = links.concat(Array.from(doc.querySelectorAll('button'))).filter(el=>actionRe.test((el.textContent||'')+' '+(el.getAttribute('href')||''))).length;
+  add('cta', ctas>=1?'pass':'fail','count='+ctas);
+  add('formCheck', doc.querySelector('form')?'pass':'warn','');
+  const headSync = Array.from(doc.querySelectorAll('head script[src]')).filter(s=>!s.hasAttribute('async')&&!s.hasAttribute('defer')).length;
+  add('headScripts', headSync<=3?'pass':'warn','count='+headSync);
+  add('lazyImg', imgs.length<5?'pass':(imgs.some(i=>i.getAttribute('loading')==='lazy')?'pass':'warn'),'imgs='+imgs.length);
+
+  return {checks:out, thin: words.length<200, wordCount: words.length};
+}
+
+function scorePillars(checks){
+  const scores={};
+  PILLARS.forEach(p=>{
+    const cs = checks.filter(c=>c.pillar===p);
+    const tot = cs.reduce((a,c)=>a+c.weight,0);
+    const got = cs.reduce((a,c)=>a+(c.status==='pass'?c.weight:c.status==='warn'?c.weight*0.5:0),0);
+    scores[p]= tot? Math.round(100*got/tot) : 0;
+  });
+  const overall = Math.round(PILLARS.reduce((a,p)=>a+scores[p],0)/PILLARS.length);
+  return {scores, overall};
+}
+
+/* ---------- App (browser only) ---------- */
+if (typeof window!=='undefined' && typeof document!=='undefined' && document.getElementById('scanForm')) {
+
+let lang='en', themePref='auto';
+const store={get(k){try{return localStorage.getItem(k)}catch(e){return null}},set(k,v){try{localStorage.setItem(k,v)}catch(e){}}};
+lang = store.get('vc-lang') || (navigator.language||'').startsWith('es') ? (store.get('vc-lang')||((navigator.language||'').startsWith('es')?'es':'en')) : 'en';
+themePref = store.get('vc-theme') || 'auto';
+
+const $=id=>document.getElementById(id);
+const T=k=>I18N[lang][k];
+
+function applyTheme(){
+  const dark = themePref==='auto' ? window.matchMedia('(prefers-color-scheme: dark)').matches : themePref==='dark';
+  document.documentElement.setAttribute('data-theme', dark?'dark':'light');
+  $('themeBtn').textContent = themePref==='auto'?'🌗':(themePref==='dark'?'☀️':'🌙');
+}
+function applyLang(){
+  document.documentElement.lang=lang;
+  $('langBtn').textContent = lang==='en'?'ES':'EN';
+  document.querySelectorAll('[data-i18n]').forEach(el=>{el.innerHTML=T(el.getAttribute('data-i18n'))});
+  if(lastResult) render(lastResult);
+}
+$('themeBtn').onclick=()=>{themePref = themePref==='auto'?'dark':themePref==='dark'?'light':'auto'; store.set('vc-theme',themePref); applyTheme();};
+$('langBtn').onclick=()=>{lang = lang==='en'?'es':'en'; store.set('vc-lang',lang); applyLang();};
+window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change',applyTheme);
+
+/* timeout compatible with older browsers (AbortSignal.timeout is recent) */
+function timeoutSignal(ms){
+  if (typeof AbortSignal!=='undefined' && AbortSignal.timeout) return AbortSignal.timeout(ms);
+  if (typeof AbortController!=='undefined'){ const c=new AbortController(); setTimeout(()=>c.abort(),ms); return c.signal; }
+  return undefined;
+}
+/* if anything crashes, tell the user instead of doing nothing */
+window.addEventListener('error', ()=>{ try{
+  const e=document.getElementById('errBox');
+  e.textContent = (I18N[lang]||I18N.en).errFetch;
+  e.style.display='block';
+  document.getElementById('progress').style.display='none';
+  document.getElementById('scanBtn').disabled=false;
+}catch(_){} });
+
+/* fetch chain */
+async function fetchHtml(url){
+  const routes=[
+    u=>'https://api.allorigins.win/raw?url='+encodeURIComponent(u),
+    u=>'https://corsproxy.io/?url='+encodeURIComponent(u),
+    u=>u
+  ];
+  for(const r of routes){
+    try{
+      const res = await fetch(r(url),{signal:timeoutSignal(20000)});
+      if(!res.ok) continue;
+      const html = await res.text();
+      if(html && html.length>500 && /<(title|body|html)/i.test(html)) return html;
+    }catch(e){/* next route */}
+  }
+  return null;
+}
+async function fetchPsi(url){
+  try{
+    const res = await fetch('https://www.googleapis.com/pagespeedonline/v5/runPagespeed?url='+encodeURIComponent(url)+'&category=performance&strategy=mobile',{signal:timeoutSignal(60000)});
+    if(!res.ok) return null;
+    const j = await res.json();
+    const s = j && j.lighthouseResult && j.lighthouseResult.categories && j.lighthouseResult.categories.performance;
+    return s ? Math.round(s.score*100) : null;
+  }catch(e){return null}
+}
+
+let lastResult=null;
+
+$('scanForm').addEventListener('submit', async ev=>{
+  ev.preventDefault();
+  $('errBox').style.display='none';
+  let url = $('urlInput').value.trim();
+  if(!url){return}
+  if(!/^https?:\/\//i.test(url)) url='https://'+url;
+  let host; try{host=new URL(url).hostname}catch(e){ $('errBox').textContent=T('errUrl'); $('errBox').style.display='block'; return; }
+  if(!host.includes('.')){ $('errBox').textContent=T('errUrl'); $('errBox').style.display='block'; return; }
+
+  $('scanBtn').disabled=true; $('results').style.display='none'; $('progress').style.display='block';
+  const steps=['p1','p2','p3','p4','p5']; let si=0;
+  $('progressMsg').textContent=T(steps[0]);
+  const tick=setInterval(()=>{si=Math.min(si+1,steps.length-1);$('progressMsg').textContent=T(steps[si])},2500);
+
+  let [html, psiScore] = await Promise.all([fetchHtml(url), fetchPsi(url)]);
+  if(!html){
+    // Retry with/without www — many servers only answer one of the two.
+    const alt = host.startsWith('www.') ? url.replace('://www.','://') : url.replace('://','://www.');
+    html = await fetchHtml(alt);
+    if(html){ url = alt; host = new URL(alt).hostname; if(psiScore===null) psiScore = await fetchPsi(alt); }
+  }
+  clearInterval(tick);
+  $('progress').style.display='none'; $('scanBtn').disabled=false;
+
+  if(!html){ $('errBox').textContent=T('errFetch'); $('errBox').style.display='block'; return; }
+
+  const doc = new DOMParser().parseFromString(html,'text/html');
+  const engine = runChecks(doc,{url,host,psiScore});
+  lastResult = {...engine, ...scorePillars(engine.checks), psiUsed: psiScore!==null, url};
+  render(lastResult);
+});
+
+function dial(score,size){
+  const r=(size/2)-7, c=2*Math.PI*r;
+  const col = score>=75?'var(--good)':score>=45?'var(--warn)':'var(--bad)';
+  return '<svg width="'+size+'" height="'+size+'"><circle cx="'+size/2+'" cy="'+size/2+'" r="'+r+'" fill="none" stroke="var(--border)" stroke-width="9"/><circle cx="'+size/2+'" cy="'+size/2+'" r="'+r+'" fill="none" stroke="'+col+'" stroke-width="9" stroke-linecap="round" stroke-dasharray="'+(c*score/100)+' '+c+'"/></svg><div class="num" style="color:'+col+'">'+score+'</div>';
+}
+
+function render(R){
+  $('results').style.display='block';
+  $('overallDial').innerHTML=dial(R.overall,110);
+  $('overallTitle').textContent = R.overall>=75?T('ovGood'):R.overall>=45?T('ovMid'):T('ovLow');
+  $('overallText').textContent = R.overall>=75?T('ovTextGood'):R.overall>=45?T('ovTextMid'):T('ovTextLow');
+  $('jsNote').style.display = R.thin?'block':'none';
+  $('psiNote').style.display = R.psiUsed?'none':'block';
+
+  $('pillarCards').innerHTML = PILLARS.map(p=>
+    '<div class="pillar"><div class="pscore" style="color:'+(R.scores[p]>=75?'var(--good)':R.scores[p]>=45?'var(--warn)':'var(--bad)')+'">'+R.scores[p]+'</div><div class="pname">'+p+'</div><div class="pdesc">'+I18N[lang].pillarDesc[p]+'</div></div>').join('');
+
+  const issues = R.checks.filter(c=>c.status!=='pass')
+    .sort((a,b)=> (b.status==='fail')-(a.status==='fail') || b.weight-a.weight);
+  const fixHtml = c=>{
+    const L=CHECKS[c.id][lang], D=CHECKS[c.id].d;
+    return '<div class="fix"><div class="fhead"><span class="badge '+(c.status==='fail'?'b-bad':'b-warn')+'">'+c.pillar+'</span><span class="ftitle">'+L.t+'</span><span class="badge '+(D==='easy'?'b-easy':D==='med'?'b-med':'b-pro')+'">'+(D==='easy'?T('dEasy'):D==='med'?T('dMed'):T('dPro'))+'</span></div><p class="fwhy">'+L.w+'</p><details><summary>'+(lang==='en'?'Technical detail':'Detalle técnico')+'</summary><p class="tech">'+L.tech+(c.evidence?' ['+c.evidence+']':'')+'</p></details></div>';
+  };
+  $('topFixes').innerHTML = issues.slice(0,5).map(fixHtml).join('') || '<p style="color:var(--good)">'+(lang==='en'?'Nothing urgent — impressive!':'Nada urgente — ¡impresionante!')+'</p>';
+  const rest = issues.slice(5);
+  $('moreFixes').innerHTML = rest.map(fixHtml).join('');
+  $('moreFixes').style.display='none';
+  $('moreBtn').style.display = rest.length?'block':'none';
+  $('moreBtn').textContent = T('moreShow').replace('{n}',rest.length);
+  $('moreBtn').onclick=()=>{const open=$('moreFixes').style.display==='block';$('moreFixes').style.display=open?'none':'block';$('moreBtn').textContent=open?T('moreShow').replace('{n}',rest.length):T('moreHide');};
+
+  $('manualList').innerHTML = Object.keys(MANUAL).map((k,i)=>'<p class="manline"><b>'+(i+1)+'.</b> '+MANUAL[k][lang]+'</p>').join('');
+  $('passList').innerHTML = R.checks.filter(c=>c.status==='pass').map(c=>'<p class="passline">✓ '+CHECKS[c.id][lang].t+'</p>').join('');
+  $('results').scrollIntoView({behavior:'smooth'});
+}
+
+$('emailForm').addEventListener('submit',ev=>{
+  ev.preventDefault();
+  const v=$('emailInput').value.trim();
+  if(!v) return;
+  const list = JSON.parse(store.get('vc-emails')||'[]'); list.push({email:v,url:lastResult?lastResult.url:'',at:new Date().toISOString()});
+  store.set('vc-emails',JSON.stringify(list));
+  $('emailOk').style.display='block'; $('emailInput').value='';
+});
+
+applyTheme(); applyLang();
+}
+
+/* Node export for tests (v1.0.2) */
+if (typeof module!=='undefined') module.exports = {runChecks, scorePillars, CHECKS, I18N, MANUAL, PILLARS};
+</script>
+</body>
+</html>
