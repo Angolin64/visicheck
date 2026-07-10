@@ -283,7 +283,7 @@
           <li data-i18n="ppF3">Email alerts when your score changes</li>
           <li data-i18n="ppF4">Score history to track your progress</li>
         </ul>
-        <button type="button" class="planBtn" data-plan="Pro $29" data-i18n="waitBtnCard">Join the early list</button>
+        <button type="button" class="planBtn" data-plan="Pro $29" data-i18n="waitBtnCard">Get Pro — $29/month</button>
       </div>
       <div class="plan">
         <h3>Agency</h3>
@@ -294,7 +294,7 @@
           <li data-i18n="paF3">White-label PDF reports with your brand</li>
           <li data-i18n="paF4">Priority support</li>
         </ul>
-        <button type="button" class="planBtn" data-plan="Agency $99" data-i18n="waitBtnCard2">Join the early list</button>
+        <button type="button" class="planBtn" data-plan="Agency $99" data-i18n="waitBtnCard2">Get Agency — $99/month</button>
       </div>
     </div>
     <div id="waitBox">
@@ -366,9 +366,9 @@ en:{
   proBadge:'Founding price — locked for life', perMonth:'/month', perMonth2:'/month',
   ppF1:'Everything in Free', ppF2:'Automatic weekly monitoring of your site', ppF3:'Email alerts when your score changes', ppF4:'Score history to track your progress',
   paF1:'Everything in Pro', paF2:'Monitor up to 15 client websites', paF3:'White-label PDF reports with your brand', paF4:'Priority support',
-  waitBtnCard:'Join the early list', waitBtnCard2:'Join the early list',
-  waitTitle:'<b>Paid plans launch soon.</b> Leave your email and we’ll reserve your founding-member price — you pay nothing today.',
-  waitBtn:'Reserve my price', waitOk:'✓ You’re on the list! We’ll email you before launch.'
+  waitBtnCard:'Get Pro — $29/month', waitBtnCard2:'Get Agency — $99/month',
+  waitTitle:'<b>Checkout is handled securely by Stripe.</b> If you have any trouble, leave your email and we’ll set you up personally.',
+  waitBtn:'Contact me', waitOk:'✓ Got it! We’ll reach out shortly.'
 },
 es:{
   heroTitle:'¿Tu sitio web es <em>visible</em> para Google y la IA?',
@@ -418,9 +418,9 @@ es:{
   proBadge:'Precio fundador — congelado de por vida', perMonth:'/mes', perMonth2:'/mes',
   ppF1:'Todo lo del plan Gratis', ppF2:'Monitoreo automático semanal de tu sitio', ppF3:'Alertas por email cuando tu puntaje cambia', ppF4:'Historial de puntajes para ver tu progreso',
   paF1:'Todo lo del plan Pro', paF2:'Monitorea hasta 15 sitios de clientes', paF3:'Reportes PDF white-label con tu marca', paF4:'Soporte prioritario',
-  waitBtnCard:'Unirme a la lista', waitBtnCard2:'Unirme a la lista',
-  waitTitle:'<b>Los planes de pago llegan pronto.</b> Deja tu email y reservamos tu precio de fundador — hoy no pagas nada.',
-  waitBtn:'Reservar mi precio', waitOk:'✓ ¡Estás en la lista! Te escribiremos antes del lanzamiento.'
+  waitBtnCard:'Contratar Pro — $29/mes', waitBtnCard2:'Contratar Agency — $99/mes',
+  waitTitle:'<b>El pago lo procesa Stripe de forma segura.</b> Si tienes algún problema, deja tu email y te activamos personalmente.',
+  waitBtn:'Contáctenme', waitOk:'✓ ¡Recibido! Te escribimos en breve.'
 }};
 
 /* ---------- Check catalog (t=title, w=why, tech=expander) ---------- */
@@ -825,11 +825,17 @@ $('emailForm').addEventListener('submit',async ev=>{
 
 $('printBtn').onclick=()=>window.print();
 
-/* Waitlist for paid plans → same ConvertCore relay, with the chosen plan */
+/* Paid plans → Stripe Checkout (live Payment Links). Waitlist kept as fallback. */
+const PLAN_LINKS={
+  'Pro $29':'https://buy.stripe.com/8x214o3Di33aeEB1Emf7i00',
+  'Agency $99':'https://buy.stripe.com/6oU14o6PubzGaol2Iqf7i01'
+};
 let selectedPlan='';
 document.querySelectorAll('.planBtn').forEach(b=>{
   b.addEventListener('click',()=>{
     selectedPlan=b.getAttribute('data-plan');
+    const link=PLAN_LINKS[selectedPlan];
+    if(link){ window.open(link,'_blank','noopener'); return; }
     $('waitBox').style.display='block';
     $('waitOk').style.display='none';
     $('waitBox').scrollIntoView({behavior:'smooth',block:'center'});
