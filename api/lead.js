@@ -7,7 +7,7 @@ export default async function handler(req, res) {
 
   let body = req.body;
   if (typeof body === 'string') { try { body = JSON.parse(body); } catch (e) { body = {}; } }
-  const { email, website, score, scores, language } = body || {};
+  const { email, website, score, scores, language, plan } = body || {};
   if (!email || !/.+@.+\..+/.test(String(email))) { res.status(400).json({ error: 'invalid email' }); return; }
 
   const key = process.env.CONVERTCORE_API_KEY;
@@ -16,7 +16,8 @@ export default async function handler(req, res) {
   if (!key) { res.status(500).json({ error: 'lead relay not configured' }); return; }
 
   const s = scores || {};
-  const message = 'VisiCheck scan · site: ' + (website || 'n/a') +
+  const planTag = plan ? String(plan).slice(0, 40) : '';
+  const message = (planTag ? 'WAITLIST ' + planTag + ' · ' : '') + 'VisiCheck scan · site: ' + (website || 'n/a') +
     ' · overall: ' + (score ?? 'n/a') +
     (scores ? (' · SEO ' + s.SEO + ' / AEO ' + s.AEO + ' / GEO ' + s.GEO + ' / AIO ' + s.AIO + ' / SXO ' + s.SXO) : '') +
     ' · lang: ' + (language || 'en');
