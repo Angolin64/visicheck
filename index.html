@@ -159,10 +159,10 @@
     <h1 data-i18n="heroTitle">Is your website <em>visible</em> to Google and AI?</h1>
     <p class="sub" data-i18n="heroSub">Paste your address below. In about a minute you get a clear score and a step-by-step plan — in plain English — so Google finds you and AI tools like ChatGPT mention you.</p>
     <form class="scanbox" id="scanForm">
-      <input type="text" id="urlInput" placeholder="yourwebsite.com" aria-label="Website URL" autocomplete="url">
+      <input type="text" id="urlInput" placeholder="yourwebsite.com" aria-label="Website URL" autocomplete="url" autocapitalize="none" autocorrect="off" spellcheck="false" inputmode="url">
       <button type="submit" id="scanBtn" data-i18n="scanBtn">Check my site</button>
     </form>
-    <p class="hint" data-i18n="hint">Free · No signup · Works with any website</p>
+    <p class="hint" data-i18n="hint">Free · No signup · Any format works: <b>yoursite.com</b>, <b>www.yoursite.com</b> or <b>https://yoursite.com/page</b></p>
     <p class="err" id="errBox"></p>
   </section>
 
@@ -256,8 +256,8 @@ const I18N = {
 en:{
   heroTitle:'Is your website <em>visible</em> to Google and AI?',
   heroSub:'Paste your address below. In about a minute you get a clear score and a step-by-step plan — in plain English — so Google finds you and AI tools like ChatGPT mention you.',
-  scanBtn:'Check my site', hint:'Free · No signup · Works with any website',
-  errUrl:'That doesn’t look like a web address. Try something like: yourwebsite.com',
+  scanBtn:'Check my site', hint:'Free · No signup · Any format works: <b>yoursite.com</b>, <b>www.yoursite.com</b> or <b>https://yoursite.com/page</b>',
+  errUrl:'That doesn’t look like a web address. Examples that work: yoursite.com · www.yoursite.com · https://yoursite.com/page',
   errFetch:'We couldn’t reach this site. It may be blocking automated tools, or it may be down. Please try again in a minute.',
   p1:'Reading your page…', p2:'Checking how Google sees you…', p3:'Checking how AI tools see you…', p4:'Measuring speed…', p5:'Writing your plan…',
   jsNote:'Heads up: this site builds its content with JavaScript. Search engines and AI tools often see the mostly-empty first version — which is what we analyzed. That in itself is worth fixing.',
@@ -300,8 +300,8 @@ en:{
 es:{
   heroTitle:'¿Tu sitio web es <em>visible</em> para Google y la IA?',
   heroSub:'Pega tu dirección abajo. En un minuto recibes una puntuación clara y un plan paso a paso — en lenguaje simple — para que Google te encuentre y herramientas de IA como ChatGPT te mencionen.',
-  scanBtn:'Revisar mi sitio', hint:'Gratis · Sin registro · Funciona con cualquier sitio',
-  errUrl:'Eso no parece una dirección web. Prueba algo como: tusitio.com',
+  scanBtn:'Revisar mi sitio', hint:'Gratis · Sin registro · Cualquier formato sirve: <b>tusitio.com</b>, <b>www.tusitio.com</b> o <b>https://tusitio.com/pagina</b>',
+  errUrl:'Eso no parece una dirección web. Ejemplos que funcionan: tusitio.com · www.tusitio.com · https://tusitio.com/pagina',
   errFetch:'No pudimos acceder a este sitio. Puede estar bloqueando herramientas automáticas o estar caído. Intenta de nuevo en un minuto.',
   p1:'Leyendo tu página…', p2:'Viendo cómo te ve Google…', p3:'Viendo cómo te ven las IAs…', p4:'Midiendo velocidad…', p5:'Escribiendo tu plan…',
   jsNote:'Ojo: este sitio construye su contenido con JavaScript. Los buscadores y las IAs suelen ver la primera versión casi vacía — que es lo que analizamos. Eso, por sí solo, vale la pena corregirlo.',
@@ -591,9 +591,10 @@ window.addEventListener('error', ()=>{ try{
   document.getElementById('scanBtn').disabled=false;
 }catch(_){} });
 
-/* fetch chain: own serverless fetcher first (when hosted), then public proxies */
+/* fetch chain: own serverless fetcher first (when hosted), then public proxies.
+   quick=true limits to the fastest, most capable route (used for URL variants). */
 const looksHtml = h => h && h.length>500 && /<(title|body|html)/i.test(h);
-async function fetchHtml(url){
+async function fetchHtml(url, quick){
   // Route 0: our own /api/scan (exists when the app is hosted on Vercel).
   if (location.protocol.startsWith('http')) {
     try{
@@ -603,21 +604,43 @@ async function fetchHtml(url){
         if(j && looksHtml(j.html)) return j.html;
       }
     }catch(e){/* fall through to proxies */}
+    if(quick) return null;
   }
   const routes=[
     u=>'https://api.allorigins.win/raw?url='+encodeURIComponent(u),
     u=>'https://corsproxy.io/?url='+encodeURIComponent(u),
     u=>u
   ];
-  for(const r of routes){
+  for(const r of (quick?routes.slice(0,1):routes)){
     try{
-      const res = await fetch(r(url),{signal:timeoutSignal(20000)});
+      const res = await fetch(r(url),{signal:timeoutSignal(quick?12000:20000)});
       if(!res.ok) continue;
       const html = await res.text();
       if(looksHtml(html)) return html;
     }catch(e){/* next route */}
   }
   return null;
+}
+
+/* Normalize whatever the user pastes into an ordered list of URL candidates:
+   keeps their path, tries https/http and with/without www. */
+function urlCandidates(raw){
+  let u = (raw||'').trim()
+    .replace(/^[\s"'<(\[]+/,'').replace(/[\s"'>)\].,;]+$/,'')   // paste artifacts
+    .split(/\s+/)[0];
+  if(!u) return null;
+  if(!/^[a-z][a-z0-9+.-]*:\/\//i.test(u)) u = 'https://' + u;   // no protocol → https
+  if(!/^https?:\/\//i.test(u)) return null;                      // ftp:// etc → invalid
+  u = u.replace(/^https?:\/\//i, m => m.toLowerCase());
+  let base; try{ base = new URL(u); }catch(e){ return null; }
+  const host = base.hostname.toLowerCase();
+  if(!host.includes('.')) return null;
+  const path = (base.pathname||'/') + (base.search||'');
+  const hosts  = host.startsWith('www.') ? [host, host.slice(4)] : [host, 'www.'+host];
+  const protos = base.protocol==='http:' ? ['http:','https:'] : ['https:','http:'];
+  const out=[];
+  for(const p of protos) for(const h of hosts) out.push(p+'//'+h+path);
+  return out;
 }
 async function fetchPsi(url){
   try{
@@ -637,29 +660,31 @@ const LEAD_WEBHOOK = location.protocol.startsWith('http') ? '/api/lead' : '';
 $('scanForm').addEventListener('submit', async ev=>{
   ev.preventDefault();
   $('errBox').style.display='none';
-  let url = $('urlInput').value.trim();
-  if(!url){return}
-  if(!/^https?:\/\//i.test(url)) url='https://'+url;
-  let host; try{host=new URL(url).hostname}catch(e){ $('errBox').textContent=T('errUrl'); $('errBox').style.display='block'; return; }
-  if(!host.includes('.')){ $('errBox').textContent=T('errUrl'); $('errBox').style.display='block'; return; }
+  const cands = urlCandidates($('urlInput').value);
+  if(!$('urlInput').value.trim()) return;
+  if(!cands){ $('errBox').textContent=T('errUrl'); $('errBox').style.display='block'; return; }
 
   $('scanBtn').disabled=true; $('results').style.display='none'; $('progress').style.display='block';
   const steps=['p1','p2','p3','p4','p5']; let si=0;
   $('progressMsg').textContent=T(steps[0]);
   const tick=setInterval(()=>{si=Math.min(si+1,steps.length-1);$('progressMsg').textContent=T(steps[si])},2500);
 
-  let [html, psiScore] = await Promise.all([fetchHtml(url), fetchPsi(url)]);
-  if(!html){
-    // Retry with/without www — many servers only answer one of the two.
-    const alt = host.startsWith('www.') ? url.replace('://www.','://') : url.replace('://','://www.');
-    html = await fetchHtml(alt);
-    if(html){ url = alt; host = new URL(alt).hostname; if(psiScore===null) psiScore = await fetchPsi(alt); }
+  // Try the primary candidate with the full chain, the rest with the quick route,
+  // so a valid address always finds its working variant (https/http, www/no-www).
+  const psiPromise = fetchPsi(cands[0]);
+  let html=null, url=null;
+  for(let i=0;i<cands.length;i++){
+    html = await fetchHtml(cands[i], i>0);
+    if(html){ url=cands[i]; break; }
   }
+  let psiScore = await psiPromise;
+  if(psiScore===null && url && url!==cands[0]) psiScore = await fetchPsi(url);
   clearInterval(tick);
   $('progress').style.display='none'; $('scanBtn').disabled=false;
 
   if(!html){ $('errBox').textContent=T('errFetch'); $('errBox').style.display='block'; return; }
 
+  const host = new URL(url).hostname;
   const doc = new DOMParser().parseFromString(html,'text/html');
   const engine = runChecks(doc,{url,host,psiScore});
   lastResult = {...engine, ...scorePillars(engine.checks), psiUsed: psiScore!==null, url};
