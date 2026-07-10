@@ -122,6 +122,24 @@
   .faq details{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:12px 16px;margin-bottom:8px;box-shadow:var(--shadow)}
   .faq summary{font-weight:700;font-size:.93rem;cursor:pointer}
   .faq p{margin-top:8px;font-size:.89rem;color:var(--muted);line-height:1.6}
+  /* pricing */
+  .pricing{margin-top:56px;border-top:1px solid var(--border);padding-top:34px}
+  .pricing h2{font-size:1.15rem;margin:0 0 16px;letter-spacing:-.2px}
+  .plans{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:14px}
+  .plan{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:20px;box-shadow:var(--shadow);display:flex;flex-direction:column;position:relative}
+  .plan.featured{border-color:var(--accent)}
+  .plan .badge-top{position:absolute;top:-11px;left:50%;transform:translateX(-50%);background:var(--accent);color:#fff;font-size:.66rem;font-weight:700;letter-spacing:.6px;text-transform:uppercase;padding:3px 12px;border-radius:20px;white-space:nowrap}
+  .plan h3{font-size:1rem;margin-bottom:2px}
+  .plan .price{font-size:1.7rem;font-weight:800;margin:6px 0 2px}
+  .plan .price span{font-size:.8rem;font-weight:400;color:var(--muted)}
+  .plan ul{list-style:none;margin:12px 0 16px;flex:1}
+  .plan li{font-size:.85rem;color:var(--text);margin-bottom:8px;padding-left:18px;position:relative;line-height:1.45}
+  .plan li::before{content:"✓";position:absolute;left:0;color:var(--good);font-weight:700}
+  .plan button{width:100%;padding:11px;border:none;border-radius:9px;font-weight:700;font-size:.92rem;cursor:pointer;background:var(--accent);color:#fff}
+  .plan button[disabled]{background:var(--border);color:var(--muted);cursor:default}
+  #waitBox{display:none;margin-top:16px;background:var(--accent-soft);border:1px solid var(--accent);border-radius:12px;padding:16px}
+  #waitBox p{font-size:.9rem;margin-bottom:10px}
+  #waitOk{color:var(--good);font-size:.9rem;display:none;margin-top:8px}
   /* print report */
   #printHead{display:none}
   #printBtn{margin-top:10px}
@@ -131,7 +149,7 @@
       --accent:#1a49b8;--good:#0e7a4b;--warn:#8a6200;--bad:#b03030;--manual:#5747a8;--shadow:none;
     }
     body{background:#fff}
-    .bar,.hero,#progress,.learn,#emailPanel,#printBtn,#moreBtn,.controls{display:none!important}
+    .bar,.hero,#progress,.learn,.pricing,#emailPanel,#printBtn,#moreBtn,.controls{display:none!important}
     #results{display:block!important}
     #moreFixes{display:block!important}
     #printHead{display:block;border-bottom:2px solid #000;margin-bottom:16px;padding-bottom:10px}
@@ -242,6 +260,53 @@
     </div>
   </section>
 
+  <section class="pricing" id="pricing">
+    <h2 data-i18n="priceTitle">Simple plans, founding-member prices</h2>
+    <div class="plans">
+      <div class="plan">
+        <h3 data-i18n="pfName">Free</h3>
+        <div class="price">$0</div>
+        <ul>
+          <li data-i18n="pfF1">Full 5-pillar scan of any website</li>
+          <li data-i18n="pfF2">Prioritized, plain-English action plan</li>
+          <li data-i18n="pfF3">Branded PDF report</li>
+        </ul>
+        <button disabled data-i18n="pfBtn">You’re using it now</button>
+      </div>
+      <div class="plan featured">
+        <span class="badge-top" data-i18n="proBadge">Founding price — locked for life</span>
+        <h3>Pro</h3>
+        <div class="price">$29<span data-i18n="perMonth">/month</span></div>
+        <ul>
+          <li data-i18n="ppF1">Everything in Free</li>
+          <li data-i18n="ppF2">Automatic weekly monitoring of your site</li>
+          <li data-i18n="ppF3">Email alerts when your score changes</li>
+          <li data-i18n="ppF4">Score history to track your progress</li>
+        </ul>
+        <button type="button" class="planBtn" data-plan="Pro $29" data-i18n="waitBtnCard">Join the early list</button>
+      </div>
+      <div class="plan">
+        <h3>Agency</h3>
+        <div class="price">$99<span data-i18n="perMonth2">/month</span></div>
+        <ul>
+          <li data-i18n="paF1">Everything in Pro</li>
+          <li data-i18n="paF2">Monitor up to 15 client websites</li>
+          <li data-i18n="paF3">White-label PDF reports with your brand</li>
+          <li data-i18n="paF4">Priority support</li>
+        </ul>
+        <button type="button" class="planBtn" data-plan="Agency $99" data-i18n="waitBtnCard2">Join the early list</button>
+      </div>
+    </div>
+    <div id="waitBox">
+      <p data-i18n="waitTitle"><b>Paid plans launch soon.</b> Leave your email and we’ll reserve your founding-member price — you pay nothing today.</p>
+      <form class="email" id="waitForm">
+        <input type="email" id="waitEmail" placeholder="you@business.com" aria-label="Email" required>
+        <button type="submit" data-i18n="waitBtn">Reserve my price</button>
+      </form>
+      <p id="waitOk" data-i18n="waitOk">✓ You’re on the list! We’ll email you before launch.</p>
+    </div>
+  </section>
+
   <footer data-i18n="footer">VisiCheck · getvisicheck.com · This is an early preview. Scores are based on what we can verify from your public page — they are guidance, not guarantees.</footer>
 </div>
 
@@ -295,7 +360,15 @@ en:{
   faq4q:'How often should I check my website?',
   faq4a:'After every significant change to your site, and at least once a month — search engines and AI models update constantly. Automatic weekly monitoring is coming soon.',
   faq5q:'My score is low. Where do I start?',
-  faq5a:'Start with the “Fix this first” list: it is sorted so the changes with the biggest impact and the lowest effort come first, each explained in plain language.'
+  faq5a:'Start with the “Fix this first” list: it is sorted so the changes with the biggest impact and the lowest effort come first, each explained in plain language.',
+  priceTitle:'Simple plans, founding-member prices',
+  pfName:'Free', pfF1:'Full 5-pillar scan of any website', pfF2:'Prioritized, plain-English action plan', pfF3:'Branded PDF report', pfBtn:'You’re using it now',
+  proBadge:'Founding price — locked for life', perMonth:'/month', perMonth2:'/month',
+  ppF1:'Everything in Free', ppF2:'Automatic weekly monitoring of your site', ppF3:'Email alerts when your score changes', ppF4:'Score history to track your progress',
+  paF1:'Everything in Pro', paF2:'Monitor up to 15 client websites', paF3:'White-label PDF reports with your brand', paF4:'Priority support',
+  waitBtnCard:'Join the early list', waitBtnCard2:'Join the early list',
+  waitTitle:'<b>Paid plans launch soon.</b> Leave your email and we’ll reserve your founding-member price — you pay nothing today.',
+  waitBtn:'Reserve my price', waitOk:'✓ You’re on the list! We’ll email you before launch.'
 },
 es:{
   heroTitle:'¿Tu sitio web es <em>visible</em> para Google y la IA?',
@@ -339,7 +412,15 @@ es:{
   faq4q:'¿Cada cuánto debo revisar mi sitio?',
   faq4a:'Después de cada cambio importante y al menos una vez al mes — los buscadores y los modelos de IA se actualizan constantemente. El monitoreo semanal automático llegará pronto.',
   faq5q:'Mi puntaje salió bajo. ¿Por dónde empiezo?',
-  faq5a:'Empieza por la lista “Arregla esto primero”: está ordenada para que lo de mayor impacto y menor esfuerzo vaya primero, todo explicado en lenguaje simple.'
+  faq5a:'Empieza por la lista “Arregla esto primero”: está ordenada para que lo de mayor impacto y menor esfuerzo vaya primero, todo explicado en lenguaje simple.',
+  priceTitle:'Planes simples, precio de miembro fundador',
+  pfName:'Gratis', pfF1:'Análisis completo de 5 pilares de cualquier sitio', pfF2:'Plan de acción priorizado en lenguaje simple', pfF3:'Reporte PDF con marca', pfBtn:'Lo estás usando ahora',
+  proBadge:'Precio fundador — congelado de por vida', perMonth:'/mes', perMonth2:'/mes',
+  ppF1:'Todo lo del plan Gratis', ppF2:'Monitoreo automático semanal de tu sitio', ppF3:'Alertas por email cuando tu puntaje cambia', ppF4:'Historial de puntajes para ver tu progreso',
+  paF1:'Todo lo del plan Pro', paF2:'Monitorea hasta 15 sitios de clientes', paF3:'Reportes PDF white-label con tu marca', paF4:'Soporte prioritario',
+  waitBtnCard:'Unirme a la lista', waitBtnCard2:'Unirme a la lista',
+  waitTitle:'<b>Los planes de pago llegan pronto.</b> Deja tu email y reservamos tu precio de fundador — hoy no pagas nada.',
+  waitBtn:'Reservar mi precio', waitOk:'✓ ¡Estás en la lista! Te escribiremos antes del lanzamiento.'
 }};
 
 /* ---------- Check catalog (t=title, w=why, tech=expander) ---------- */
@@ -743,6 +824,31 @@ $('emailForm').addEventListener('submit',async ev=>{
 });
 
 $('printBtn').onclick=()=>window.print();
+
+/* Waitlist for paid plans → same ConvertCore relay, with the chosen plan */
+let selectedPlan='';
+document.querySelectorAll('.planBtn').forEach(b=>{
+  b.addEventListener('click',()=>{
+    selectedPlan=b.getAttribute('data-plan');
+    $('waitBox').style.display='block';
+    $('waitOk').style.display='none';
+    $('waitBox').scrollIntoView({behavior:'smooth',block:'center'});
+    $('waitEmail').focus();
+  });
+});
+$('waitForm').addEventListener('submit',async ev=>{
+  ev.preventDefault();
+  const v=$('waitEmail').value.trim();
+  if(!v) return;
+  const payload={email:v, plan:selectedPlan||'Pro', website:lastResult?lastResult.url:'', score:lastResult?lastResult.overall:null,
+    language:lang, source:'getvisicheck.com', at:new Date().toISOString()};
+  if(LEAD_WEBHOOK){
+    try{ await fetch(LEAD_WEBHOOK,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)}); }catch(e){}
+  }
+  const list = JSON.parse(store.get('vc-wait')||'[]'); list.push(payload);
+  store.set('vc-wait',JSON.stringify(list));
+  $('waitOk').style.display='block'; $('waitEmail').value='';
+});
 
 applyTheme(); applyLang();
 }
