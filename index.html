@@ -35,12 +35,15 @@
     --accent:#2f6bff; --accent-soft:rgba(47,107,255,.09);
     --good:#1eaa6d; --warn:#e5a300; --bad:#e05252; --manual:#8a7bd8;
     --shadow:0 4px 18px rgba(23,35,58,.06);
+    /* the 5 pillars of the 2026 wheel */
+    --c-seo:#1e9e63; --c-aeo:#d3941f; --c-geo:#7e5fd6; --c-aio:#d96a3f; --c-sxo:#1fa0b8;
   }
   [data-theme="dark"]{
     --bg:#0f1420; --card:#1a2233; --border:#2c3a55; --text:#e8edf7; --muted:#9fb0cc;
     --accent:#4f8dff; --accent-soft:rgba(79,141,255,.12);
     --good:#4fd396; --warn:#f0c060; --bad:#f08080; --manual:#a99bf0;
     --shadow:0 4px 18px rgba(0,0,0,.35);
+    --c-seo:#3cc98a; --c-aeo:#f0b64a; --c-geo:#a78cf2; --c-aio:#f28a60; --c-sxo:#4ac6dd;
   }
   *{box-sizing:border-box;margin:0;padding:0}
   body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--text);line-height:1.5;transition:background .25s,color .25s}
@@ -60,7 +63,14 @@
   .scanbox{display:flex;gap:10px;max-width:640px;margin:0 auto;flex-wrap:wrap}
   .scanbox input{flex:1;min-width:240px;padding:14px 16px;font-size:1rem;border:2px solid var(--border);border-radius:10px;background:var(--card);color:var(--text);outline:none}
   .scanbox input:focus{border-color:var(--accent)}
-  .scanbox button{padding:14px 26px;font-size:1rem;font-weight:700;border:none;border-radius:10px;background:var(--accent);color:#fff;cursor:pointer}
+  .scanbox button{padding:14px 26px;font-size:1rem;font-weight:700;border:none;border-radius:10px;background:linear-gradient(135deg,var(--accent),var(--c-geo));color:#fff;cursor:pointer}
+  .pillchips{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:16px}
+  .pillchips span{font-size:.72rem;font-weight:700;letter-spacing:.5px;padding:4px 12px;border-radius:20px;border:1.5px solid;background:var(--card)}
+  .pc-seo{color:var(--c-seo);border-color:var(--c-seo)}
+  .pc-aeo{color:var(--c-aeo);border-color:var(--c-aeo)}
+  .pc-geo{color:var(--c-geo);border-color:var(--c-geo)}
+  .pc-aio{color:var(--c-aio);border-color:var(--c-aio)}
+  .pc-sxo{color:var(--c-sxo);border-color:var(--c-sxo)}
   .scanbox button:disabled{opacity:.55;cursor:wait}
   .hint{font-size:.8rem;color:var(--muted);margin-top:10px}
   .err{color:var(--bad);font-size:.9rem;margin-top:12px;display:none}
@@ -80,14 +90,25 @@
   .note{background:var(--accent-soft);border-left:3px solid var(--accent);padding:10px 14px;border-radius:8px;font-size:.86rem;margin-top:14px;display:none}
   /* pillar cards */
   .pillars{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin:18px 0}
-  .pillar{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px;text-align:center;box-shadow:var(--shadow)}
+  .pillar{background:var(--card);border:1px solid var(--border);border-top:4px solid var(--border);border-radius:12px;padding:14px;text-align:center;box-shadow:var(--shadow)}
+  .pillar.p-SEO{border-top-color:var(--c-seo)} .pillar.p-SEO .pname{color:var(--c-seo)}
+  .pillar.p-AEO{border-top-color:var(--c-aeo)} .pillar.p-AEO .pname{color:var(--c-aeo)}
+  .pillar.p-GEO{border-top-color:var(--c-geo)} .pillar.p-GEO .pname{color:var(--c-geo)}
+  .pillar.p-AIO{border-top-color:var(--c-aio)} .pillar.p-AIO .pname{color:var(--c-aio)}
+  .pillar.p-SXO{border-top-color:var(--c-sxo)} .pillar.p-SXO .pname{color:var(--c-sxo)}
   .pillar .pscore{font-size:1.55rem;font-weight:800}
   .pillar .pname{font-weight:700;font-size:.92rem;margin:2px 0}
   .pillar .pdesc{font-size:.72rem;color:var(--muted);line-height:1.35}
   /* plan */
   .panel{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:22px;box-shadow:var(--shadow);margin-top:18px}
   .panel h3{font-size:1.05rem;margin-bottom:14px}
-  .fix{border:1px solid var(--border);border-radius:10px;padding:14px 16px;margin-bottom:10px}
+  .fix{border:1px solid var(--border);border-left-width:4px;border-radius:10px;padding:14px 16px;margin-bottom:10px}
+  .fix.f-fail{border-left-color:var(--bad)} .fix.f-warn{border-left-color:var(--warn)}
+  .pb-SEO{background:rgba(30,158,99,.16);color:var(--c-seo)}
+  .pb-AEO{background:rgba(211,148,31,.16);color:var(--c-aeo)}
+  .pb-GEO{background:rgba(126,95,214,.16);color:var(--c-geo)}
+  .pb-AIO{background:rgba(217,106,63,.16);color:var(--c-aio)}
+  .pb-SXO{background:rgba(31,160,184,.16);color:var(--c-sxo)}
   .fix .fhead{display:flex;align-items:flex-start;gap:10px;flex-wrap:wrap}
   .badge{font-size:.66rem;font-weight:700;text-transform:uppercase;letter-spacing:.6px;padding:3px 8px;border-radius:20px;flex:none;margin-top:2px}
   .b-bad{background:rgba(224,82,82,.14);color:var(--bad)} .b-warn{background:rgba(229,163,0,.14);color:var(--warn)}
@@ -113,6 +134,15 @@
   /* learn section */
   .learn{margin-top:56px;border-top:1px solid var(--border);padding-top:34px}
   .learn h2{font-size:1.15rem;margin:26px 0 12px;letter-spacing:-.2px}
+  .learn h2::after{content:"";display:block;width:130px;height:4px;border-radius:2px;margin-top:7px;background:linear-gradient(90deg,var(--c-seo),var(--c-aeo),var(--c-geo),var(--c-aio),var(--c-sxo))}
+  .pillarlist li{border-left:4px solid var(--border)}
+  .pillarlist li:nth-child(1){border-left-color:var(--c-seo)} .pillarlist li:nth-child(1) b{color:var(--c-seo)}
+  .pillarlist li:nth-child(2){border-left-color:var(--c-aeo)} .pillarlist li:nth-child(2) b{color:var(--c-aeo)}
+  .pillarlist li:nth-child(3){border-left-color:var(--c-geo)} .pillarlist li:nth-child(3) b{color:var(--c-geo)}
+  .pillarlist li:nth-child(4){border-left-color:var(--c-aio)} .pillarlist li:nth-child(4) b{color:var(--c-aio)}
+  .pillarlist li:nth-child(5){border-left-color:var(--c-sxo)} .pillarlist li:nth-child(5) b{color:var(--c-sxo)}
+  .steps li b{color:var(--accent)}
+  .pricing h2::after{content:"";display:block;width:130px;height:4px;border-radius:2px;margin-top:7px;background:linear-gradient(90deg,var(--c-seo),var(--c-aeo),var(--c-geo),var(--c-aio),var(--c-sxo))}
   .learn .steps{padding-left:22px}
   .learn .steps li{margin-bottom:10px;font-size:.93rem;line-height:1.55}
   .learn .steps li b{color:var(--accent)}
@@ -181,6 +211,9 @@
       <button type="submit" id="scanBtn" data-i18n="scanBtn">Check my site</button>
     </form>
     <p class="hint" data-i18n="hint">Free · No signup · Any format works: <b>yoursite.com</b>, <b>www.yoursite.com</b> or <b>https://yoursite.com/page</b></p>
+    <div class="pillchips" aria-hidden="true">
+      <span class="pc-seo">SEO</span><span class="pc-aeo">AEO</span><span class="pc-geo">GEO</span><span class="pc-aio">AIO</span><span class="pc-sxo">SXO</span>
+    </div>
     <p class="err" id="errBox"></p>
   </section>
 
@@ -208,6 +241,10 @@
       <div id="topFixes"></div>
       <button class="morebtn" id="moreBtn"></button>
       <div id="moreFixes" style="display:none"></div>
+      <div id="dfyBox" style="margin-top:14px;background:var(--accent-soft);border:1px solid var(--accent);border-radius:10px;padding:14px">
+        <p style="font-size:.9rem;margin-bottom:10px" data-i18n="dfyText"><b>Don’t want to do this yourself?</b> Our team can implement these fixes for you — done-for-you, at your pace.</p>
+        <button class="ctl" id="dfyBtn" data-i18n="dfyBtn">🛠️ Fix it for me — talk to us</button>
+      </div>
     </div>
 
     <div class="panel">
@@ -366,6 +403,9 @@ en:{
   proBadge:'Founding price — locked for life', perMonth:'/month', perMonth2:'/month',
   ppF1:'Everything in Free', ppF2:'Automatic weekly monitoring of your site', ppF3:'Email alerts when your score changes', ppF4:'Score history to track your progress',
   paF1:'Everything in Pro', paF2:'Monitor up to 15 client websites', paF3:'White-label PDF reports with your brand', paF4:'Priority support',
+  dfyText:'<b>Don’t want to do this yourself?</b> Our team can implement these fixes for you — done-for-you, at your pace.',
+  dfyBtn:'🛠️ Fix it for me — talk to us',
+  dfyOk:'✓ Got it! We’ll review your report and reach out with a quote.',
   waitBtnCard:'Get Pro — $29/month', waitBtnCard2:'Get Agency — $99/month',
   waitTitle:'<b>Checkout is handled securely by Stripe.</b> If you have any trouble, leave your email and we’ll set you up personally.',
   waitBtn:'Contact me', waitOk:'✓ Got it! We’ll reach out shortly.'
@@ -418,6 +458,9 @@ es:{
   proBadge:'Precio fundador — congelado de por vida', perMonth:'/mes', perMonth2:'/mes',
   ppF1:'Todo lo del plan Gratis', ppF2:'Monitoreo automático semanal de tu sitio', ppF3:'Alertas por email cuando tu puntaje cambia', ppF4:'Historial de puntajes para ver tu progreso',
   paF1:'Todo lo del plan Pro', paF2:'Monitorea hasta 15 sitios de clientes', paF3:'Reportes PDF white-label con tu marca', paF4:'Soporte prioritario',
+  dfyText:'<b>¿No quieres hacerlo tú mismo?</b> Nuestro equipo puede implementar estos arreglos por ti — llave en mano, a tu ritmo.',
+  dfyBtn:'🛠️ Arréglenlo por mí — hablemos',
+  dfyOk:'✓ ¡Recibido! Revisaremos tu reporte y te contactamos con una propuesta.',
   waitBtnCard:'Contratar Pro — $29/mes', waitBtnCard2:'Contratar Agency — $99/mes',
   waitTitle:'<b>El pago lo procesa Stripe de forma segura.</b> Si tienes algún problema, deja tu email y te activamos personalmente.',
   waitBtn:'Contáctenme', waitOk:'✓ ¡Recibido! Te escribimos en breve.'
@@ -788,13 +831,13 @@ function render(R){
   $('psiNote').style.display = R.psiUsed?'none':'block';
 
   $('pillarCards').innerHTML = PILLARS.map(p=>
-    '<div class="pillar"><div class="pscore" style="color:'+(R.scores[p]>=75?'var(--good)':R.scores[p]>=45?'var(--warn)':'var(--bad)')+'">'+R.scores[p]+'</div><div class="pname">'+p+'</div><div class="pdesc">'+I18N[lang].pillarDesc[p]+'</div></div>').join('');
+    '<div class="pillar p-'+p+'"><div class="pscore" style="color:'+(R.scores[p]>=75?'var(--good)':R.scores[p]>=45?'var(--warn)':'var(--bad)')+'">'+R.scores[p]+'</div><div class="pname">'+p+'</div><div class="pdesc">'+I18N[lang].pillarDesc[p]+'</div></div>').join('');
 
   const issues = R.checks.filter(c=>c.status!=='pass')
     .sort((a,b)=> (b.status==='fail')-(a.status==='fail') || b.weight-a.weight);
   const fixHtml = c=>{
     const L=CHECKS[c.id][lang], D=CHECKS[c.id].d;
-    return '<div class="fix"><div class="fhead"><span class="badge '+(c.status==='fail'?'b-bad':'b-warn')+'">'+c.pillar+'</span><span class="ftitle">'+L.t+'</span><span class="badge '+(D==='easy'?'b-easy':D==='med'?'b-med':'b-pro')+'">'+(D==='easy'?T('dEasy'):D==='med'?T('dMed'):T('dPro'))+'</span></div><p class="fwhy">'+L.w+'</p><details><summary>'+(lang==='en'?'Technical detail':'Detalle técnico')+'</summary><p class="tech">'+L.tech+(c.evidence?' ['+c.evidence+']':'')+'</p></details></div>';
+    return '<div class="fix '+(c.status==='fail'?'f-fail':'f-warn')+'"><div class="fhead"><span class="badge pb-'+c.pillar+'">'+c.pillar+'</span><span class="ftitle">'+L.t+'</span><span class="badge '+(D==='easy'?'b-easy':D==='med'?'b-med':'b-pro')+'">'+(D==='easy'?T('dEasy'):D==='med'?T('dMed'):T('dPro'))+'</span></div><p class="fwhy">'+L.w+'</p><details><summary>'+(lang==='en'?'Technical detail':'Detalle técnico')+'</summary><p class="tech">'+L.tech+(c.evidence?' ['+c.evidence+']':'')+'</p></details></div>';
   };
   $('topFixes').innerHTML = issues.slice(0,5).map(fixHtml).join('') || '<p style="color:var(--good)">'+(lang==='en'?'Nothing urgent — impressive!':'Nada urgente — ¡impresionante!')+'</p>';
   const rest = issues.slice(5);
@@ -809,18 +852,28 @@ function render(R){
   $('results').scrollIntoView({behavior:'smooth'});
 }
 
+let dfyRequested=false;
+$('dfyBtn').onclick=()=>{
+  dfyRequested=true;
+  $('emailPanel').scrollIntoView({behavior:'smooth',block:'center'});
+  $('emailInput').focus();
+};
+
 $('emailForm').addEventListener('submit',async ev=>{
   ev.preventDefault();
   const v=$('emailInput').value.trim();
   if(!v) return;
-  const payload={email:v, website:lastResult?lastResult.url:'', score:lastResult?lastResult.overall:null,
+  const payload={email:v, plan: dfyRequested?'FIX-IT-FOR-ME':null,
+    website:lastResult?lastResult.url:'', score:lastResult?lastResult.overall:null,
     scores:lastResult?lastResult.scores:null, language:lang, source:'getvisicheck.com', at:new Date().toISOString()};
   if(LEAD_WEBHOOK){
     try{ await fetch(LEAD_WEBHOOK,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)}); }catch(e){/* keep local copy below */}
   }
   const list = JSON.parse(store.get('vc-emails')||'[]'); list.push(payload);
   store.set('vc-emails',JSON.stringify(list));
+  $('emailOk').textContent = dfyRequested ? T('dfyOk') : T('emailOk');
   $('emailOk').style.display='block'; $('emailInput').value='';
+  dfyRequested=false;
 });
 
 $('printBtn').onclick=()=>window.print();
@@ -846,7 +899,7 @@ $('waitForm').addEventListener('submit',async ev=>{
   ev.preventDefault();
   const v=$('waitEmail').value.trim();
   if(!v) return;
-  const payload={email:v, plan:selectedPlan||'Pro', website:lastResult?lastResult.url:'', score:lastResult?lastResult.overall:null,
+  const payload={email:v, plan:'CHECKOUT HELP '+(selectedPlan||'Pro'), website:lastResult?lastResult.url:'', score:lastResult?lastResult.overall:null,
     language:lang, source:'getvisicheck.com', at:new Date().toISOString()};
   if(LEAD_WEBHOOK){
     try{ await fetch(LEAD_WEBHOOK,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)}); }catch(e){}
