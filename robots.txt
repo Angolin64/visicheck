@@ -1,0 +1,34 @@
+User-agent: *
+Allow: /
+
+# VisiCheck's whole pitch is about being visible to AI — so we explicitly
+# allow the crawlers/agents that matter for that, rather than leaving them
+# to the (safe-by-default) wildcard rule above.
+User-agent: GPTBot
+Allow: /
+
+User-agent: OAI-SearchBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: anthropic-ai
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+User-agent: Amazonbot
+Allow: /
+
+User-agent: CCBot
+Allow: /
+
+Sitemap: https://www.getvisicheck.com/sitemap.xml

@@ -264,6 +264,7 @@
         <input type="email" id="emailInput" placeholder="you@business.com" aria-label="Email" required>
         <button type="submit" data-i18n="emailBtn">Notify me</button>
       </form>
+      <p style="color:var(--muted);font-size:.72rem;margin-top:6px">By submitting, you agree to our <a href="/privacy.html" style="color:inherit">Privacy Policy</a> and <a href="/terms.html" style="color:inherit">Terms of Service</a>.</p>
       <p class="emailok" id="emailOk" data-i18n="emailOk"></p>
       <!-- TODO backend: wire this form to the email service before launch. MVP stores locally only. -->
     </div>
@@ -344,7 +345,11 @@
     </div>
   </section>
 
-  <footer data-i18n="footer">VisiCheck · getvisicheck.com · This is an early preview. Scores are based on what we can verify from your public page — they are guidance, not guarantees.</footer>
+  <footer>
+    <span data-i18n="footer">VisiCheck · getvisicheck.com · This is an early preview. Scores are based on what we can verify from your public page — they are guidance, not guarantees.</span>
+    <br>
+    <a href="/privacy.html" style="color:inherit">Privacy Policy</a> · <a href="/terms.html" style="color:inherit">Terms of Service</a>
+  </footer>
 </div>
 
 <script>
